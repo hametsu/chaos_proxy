@@ -8,7 +8,7 @@
 <body>
 
 <% @elements.each do |e| %>
-  <img src='<%= e['uri'] %>' title='<%= e['accessed_at'] %>' style='max-height:200px;'/>
+  <img src='http://<%= request.host.to_s + ':' + request.port.to_s %>/glitch/<%= e['uri'] %>' title='<%= e['accessed_at'] %>' style='max-height:200px;'/>
 <% end %>
 
 </body>
