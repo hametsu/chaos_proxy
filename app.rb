@@ -23,7 +23,7 @@ end
 
 get '/' do
   # 最新画像URL500件
-  @elements = get_recents(500,0)
+  @elements = get_recents(50,0)
   erb :index
 end
 
