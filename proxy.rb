@@ -2,9 +2,12 @@ require 'rubygems'
 require 'webrick'
 require 'webrick/httpproxy'
 require 'uri'
+require 'yaml'
 
 require 'tokyotyrant'
 include TokyoTyrant
+
+settings = YAML.load_file("settings.yaml")
 
 handler = Proc.new() {|req,res|
   # proxyに入ってきたパス
@@ -16,7 +19,7 @@ handler = Proc.new() {|req,res|
     #puts value.inspect
 
     rdb = RDBTBL::new
-    rdb.open('localhost', 1978)
+    rdb.open(settings["tokyotyrant"]["host"].to_s, settings["tokyotyrant"]["port"].to_i)
     # TTに投入するキー
     key = rdb.rnum+1
     # 挿入実行
@@ -27,7 +30,7 @@ handler = Proc.new() {|req,res|
 
 s = WEBrick::HTTPProxyServer.new(
   # 起動するポート
-  :Port => 3000,
+  :Port => settings["proxy"]["port"].to_i,
   # ログ出力制限
   :Logger => WEBrick::Log::new("webrick.log", WEBrick::Log::WARN),
   :ProxyVia => false,

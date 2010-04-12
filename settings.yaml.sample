@@ -1,0 +1,8 @@
+tokyotyrant:
+  host: "localhost"
+  port: 1978
+proxy:
+  port: 3000
+app:
+  recents_num: 500
+

@@ -3,13 +3,57 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
   <title>hoge</title>
+  <style type="text/css">
+    div.hoge  {float: left;}
+  </style>
 </head>
 <body>
 
+<div id="panel">
 <% @elements.each do |e| %>
-  <img src='<%= e['uri'] %>' title='<%= e['accessed_at'] %>' style='max-height:200px;'/>
+<div class="hoge" title="<%= e['accessed_at'] %>">
+  <img src='<%= e['uri'] %>' style='max-height:200px;'/>
+</div>
 <% end %>
+</div>
 
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+  setInterval("loader()", 5000)
+});
+function loader(){
+  var latest_time = $('div.hoge').attr("title")
+  var url = "/update/" + latest_time;
+  $.getJSON(url,
+    function(data) {
+      var imgs = new Array();
+      $.each(data, function(){
+        imgs.push(this);
+      });
+      if( imgs.length ){
+        showEntry(imgs);
+      }
+    });
+}
+
+function showEntry(imgs){
+  var img = imgs.pop();
+  var html = $("<img/>");
+  html.attr('src', img.uri)
+  var div = $("<div/>");
+  div.append(html).addClass("hoge").attr('title',img.accessed_at).hide();
+  $("#panel").prepend(div);
+  div.animate({
+    "height": "toggle", "opacity": "toggle"
+    }, 1000,
+    function(){
+      if(imgs.length){ showEntry(imgs) }
+    });
+}
+</script>
 </body>
 </html>
