@@ -9,7 +9,10 @@ include TokyoTyrant
 
 require 'glitch'
 
-require "json/pure"
+require 'json/pure'
+
+require 'open-uri'
+require 'digest/md5'
 
 configure do
   set :settings, YAML.load_file("settings.yaml")
@@ -30,12 +33,37 @@ helpers do
     qry.setlimit(limit, offset)
     return qry.searchget
   end
+
+  def open_with_cache(url)
+    # urlのMD5ハッシュ
+    hash = Digest::MD5.new.update(uri).to_s
+    filepath = "tmp/cache/img_" + hash
+    # ファイルが存在するかどうかをチェック
+    if File.exist?(filepath)
+      # あったらファイルを返す
+      content = open(filepath)
+      #cache_elapse = Time.now - File::mtime(filepath)
+      #File.delete(filepath) if cache_elapse > 60*60
+    else
+      # なかったら取得・保存して返す
+      # 二回http requestしているので若干非効率的？
+      # stringioとか使えば一回に減らせるかも
+      open(uri) do |i|
+        open(filepath, "w"){|o| o.write(i.read)}
+      end
+      content = open(uri)
+    end
+    return content
+    # そもそもこの段階(ログ閲覧時)でファイルを取得しにいくのが遅くて、
+    # proxy.rbで最初のurlアクセスがあったとき(ログ記録時)にこれをやったほうがいいのかも
+    # TODO:膨大なファイルが1ディレクトリに蓄積されるのを回避する
+  end
 end
 
 
 
 get '/' do
-  # 最新画像URL500件
+  # 最新画像URL
   @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
   erb :index
 end
