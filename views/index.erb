@@ -1,22 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
-  <title>hoge</title>
-  <style type="text/css">
-    div.hoge {float: left; padding:2px; margin:2px;}
-    img.log {max-height:200px; max-width:200px; padding:2px; margin:2px;}
-  </style>
-</head>
-<body>
 
 <div id="panel">
 <% @elements.each do |e| %>
-<div class="hoge" title="<%= e['accessed_at'] %>">
-  <img src='<%= e['uri'] %>' class="log" />
-</div>
+  <div class="hoge" title="<%= e['accessed_at'] %>">
+    <img src='<%= e['uri'] %>' class="log" width="<%= e['count'] %>0px" />
+  </div>
 <% end %>
 </div>
 
@@ -56,5 +43,4 @@ function showEntry(imgs){
     });
 }
 </script>
-</body>
-</html>
+
