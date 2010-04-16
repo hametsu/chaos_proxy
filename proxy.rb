@@ -19,11 +19,17 @@ handler = Proc.new() {|req,res|
     #puts value.inspect
 
     rdb = RDBTBL::new
-    rdb.open(settings["tokyotyrant"]["host"].to_s, settings["tokyotyrant"]["port"].to_i)
+    unless rdb.open(settings["tokyotyrant"]["host"].to_s, settings["tokyotyrant"]["port"].to_i)
+      ecode = rdb.ecode
+      STDERR.printf("open error: %s\n", rdb.errmsg(ecode))
+    end
     # TTに投入するキー
     key = rdb.rnum+1
     # 挿入実行
-    rdb.put(key, value)
+    unless rdb.put(key, value)
+      ecode = rdb.ecode
+      STDERR.printf("open error: %s\n", rdb.errmsg(ecode))
+    end
     rdb.close
   end
 }
