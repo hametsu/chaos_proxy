@@ -6,7 +6,8 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
   <title>hoge</title>
   <style type="text/css">
-    div.hoge  {float: left;}
+    div.hoge {float: left; padding:2px; margin:2px;}
+    img.log {max-height:200px; max-width:200px; padding:2px; margin:2px;}
   </style>
 </head>
 <body>
@@ -14,7 +15,7 @@
 <div id="panel">
 <% @elements.each do |e| %>
 <div class="hoge" title="<%= e['accessed_at'] %>">
-  <img src='<%= e['uri'] %>' style='max-height:200px;'/>
+  <img src='<%= e['uri'] %>' class="log" />
 </div>
 <% end %>
 </div>

@@ -1,2 +1,29 @@
+
+
+
+
+HOWTO:
+# setup your settings
 cp settings.yaml.sample settings.yaml
+
+# start tokyo tyrant server
+./ttserv_img_ctl start
+
+# start proxy server
+ruby proxy.rb
+
+# start sinatra server
+nohup ruby app.rb -p 4567 &
+
+
+
+TODO:
+
+
+
+
+
+
+
+
 
