@@ -74,6 +74,16 @@ get '/update/:unixtime' do
   return @elements.to_json
 end
 
+get '/clear' do
+  redirect '/'
+end
+
+
+
+get '/glitch/' do
+  @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
+  erb :glitch
+end
 
 get '/glitch/*' do
   url_path = request.fullpath.scan(/^\/glitch\/(https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:@&=+$,%#]*)$/).flatten!.first
