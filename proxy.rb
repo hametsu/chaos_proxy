@@ -25,13 +25,12 @@ handler = Proc.new() {|req,res|
       value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "count"=> "0"}
       key = rdb.rnum + 1
       unless rdb.put(key, value)
-      rdb.put(key, value)
         ecode = rdb.ecode
         STDERR.printf("open error: %s\n", rdb.errmsg(ecode))
       end
     else
       # 既出のURL。カウントアップ
-      count = hit.fetch("count", "0").to_i + 1
+      count = hit.first.fetch("count", "0").to_i+1
       value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "count"=>count.to_s}
       key = rdb.rnum + 1
       unless rdb.put(key, value)

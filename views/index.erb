@@ -1,9 +1,9 @@
 
 <div id="panel">
 <% @elements.each do |e| %>
-<div class="hoge" title="<%= e['accessed_at'] %>">
-  <img src='<%= e['uri'] %>' class="log" />
-</div>
+  <div class="hoge" title="<%= e['accessed_at'] %>">
+    <img src='<%= e['uri'] %>' class="log" width="<%= e['count'] %>0px" />
+  </div>
 <% end %>
 </div>
 

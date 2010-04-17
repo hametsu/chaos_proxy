@@ -26,7 +26,7 @@ retval=0
 # setting environment variables
 LANG=C
 LC_ALL=C
-PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
+PATH="$PATH:/opt/local/bin:/sbin:/usr/sbin:/usr/local/sbin"
 export LANG LC_ALL PATH
 
 
