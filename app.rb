@@ -27,8 +27,18 @@ helpers do
     # アクセス日時順でソート
     qry.setorder('accessed_at', RDBQRY::QONUMDESC)
     # unixtimeよりも新しいエントリ
-    puts unixtime
     qry.addcond("accessed_at", RDBQRY::QCNUMGT, unixtime.to_s) unless unixtime == 0
+    # 出力件数制限
+    qry.setlimit(limit, offset)
+    return qry.searchget
+  end
+
+  def rank_by_accsess(limit, offset)
+    rdb = RDBTBL::new
+    rdb.open(options.settings["tokyotyrant"]["host"].to_s, options.settings["tokyotyrant"]["port"].to_i)
+    qry = RDBQRY::new(rdb)
+    # アクセス回数順でソート
+    qry.setorder('count', RDBQRY::QONUMDESC)
     # 出力件数制限
     qry.setlimit(limit, offset)
     return qry.searchget
@@ -68,16 +78,32 @@ get '/' do
   erb :index
 end
 
+
+
+
 get '/update/:unixtime' do
   # unixtimeより新しい画像URLがあったらJSONで返す
   @elements = get_recents(10, 0, params[:unixtime])
   return @elements.to_json
 end
 
+
 get '/clear' do
+  # TODO: TTの中身をすべて削除する
   redirect '/'
 end
 
+
+
+
+
+
+
+
+get '/counts/' do
+  @elements = rank_by_accsess(options.settings["app"]["recents_num"], 0)
+  erb :index
+end
 
 
 get '/glitch/' do
