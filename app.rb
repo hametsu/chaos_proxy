@@ -8,6 +8,7 @@ require 'tokyotyrant'
 include TokyoTyrant
 
 require 'glitch'
+require 'wave'
 
 require 'json/pure'
 
@@ -79,10 +80,48 @@ get '/clear' do
 end
 
 
+get '/imagine_breaker/' do
+  @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
+  erb :imagine_breaker
+end
 
 get '/glitch/' do
   @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
   erb :glitch
+end
+
+get '/imagine_breaker/*' do
+  url_path = request.fullpath.scan(/^\/imagine_breaker\/(https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:@&=+$,%#]*)$/).flatten!.first
+  url = URI.parse(url_path)
+  request = Net::HTTP::Get.new(url.path)
+  response = Net::HTTP.start(url.host, url.port) do |http|
+    http.request(request)
+  end
+  if rand(2) == 0
+    imagine_breaker = Glitch.new(response.body)
+  else
+    imagine_breaker = Wave.new(response.body)
+  end
+  imagine_breaker.break!
+  content_type "image/jpeg"
+  attachment "temp.jpg"
+  imagine_breaker.break!
+  return imagine_breaker.image
+end
+
+get '/wave/*' do
+  url_path = request.fullpath.scan(/^\/wave\/(https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:@&=+$,%#]*)$/).flatten!.first
+  url = URI.parse(url_path)
+  request = Net::HTTP::Get.new(url.path)
+  response = Net::HTTP.start(url.host, url.port) do |http|
+    http.request(request)
+  end
+  imagine_breaker = Wave.new(response.body)
+  imagine_breaker.break!
+  content_type "image/jpeg"
+  attachment "temp.jpg"
+  imagine_breaker.break!
+  return imagine_breaker.image
 end
 
 get '/glitch/*' do
@@ -92,11 +131,11 @@ get '/glitch/*' do
   response = Net::HTTP.start(url.host, url.port) do |http|
     http.request(request)
   end
-  glitch = Glitch.new(response.body)
-  glitch.break!
+  imagine_breaker = Glitch.new(response.body)
+  imagine_breaker.break!
   content_type "image/jpeg"
   attachment "temp.jpg"
-  glitch.break!
-  return glitch.image
+  imagine_breaker.break!
+  return imagine_breaker.image
 end
 
