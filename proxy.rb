@@ -8,7 +8,7 @@ require 'yaml'
 settings = YAML.load_file("settings.yaml")
 
 handler = Proc.new() {|req,res|
-  # requestされたパス
+  # HTTP requestされたパス
   path = req.unparsed_uri
   if path =~ /\.(jpg|gif|png)/
     rdb = RDBTBL::new
@@ -46,7 +46,9 @@ handler = Proc.new() {|req,res|
 s = WEBrick::HTTPProxyServer.new(
   :Port => settings["proxy"]["port"].to_i,
   :ProxyVia => false,
-  :ProxyContentHandler => handler
+  :ProxyURI => URI.parse('http://localhost:3128/'),
+  :ProxyContentHandler => handler,
+  :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::DEBUG)
 )
 trap('INT') { s.shutdown }
 s.start

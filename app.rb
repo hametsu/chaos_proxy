@@ -102,11 +102,18 @@ end
 
 
 
-
-
-
 get '/counts/' do
-  @elements = rank_by_accsess(options.settings["app"]["recents_num"], 0)
+  hashies = rank_by_accsess(3000, 0)
+  # 重複する画像URIをカウントしない
+  @elements = []
+  uris = []
+  hashies.each do |hash|
+    uri = hash['uri']
+    unless uris.index(uri)
+      @elements.push(hash)
+      uris.push(uri)
+    end
+  end
   erb :index
 end
 
