@@ -4,7 +4,10 @@ require 'pcap'
 class Capture
 end
 
-class ImageCapture < Capture
+class HttpCapture
+end
+
+class ImageCapture < HttpCapture
 	def capture_data(interval)
 		capdat = []
 		i = 0

@@ -83,6 +83,7 @@ end
 
 
 get '/update/:unixtime' do
+  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   # unixtimeより新しい画像URLがあったらJSONで返す
   @elements = get_recents(10, 0, params[:unixtime])
   return @elements.to_json
