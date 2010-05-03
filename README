@@ -18,7 +18,12 @@ nohup ruby app.rb -p 4567 &
 
 
 TODO:
-
+ResolveShortenImageUrl
+  movapic
+  twitpic
+  tumblr
+  flickr
+  hatena fotolife
 
 
 
