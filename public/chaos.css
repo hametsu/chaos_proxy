@@ -1,3 +1,14 @@
+/******************* common **********************/
+a:hover {
+  text-decoration : none;
+}
+
+/******************** body ***********************/
+body {
+  background:url(./back.jpg) 50% 50% #FFF no-repeat;
+  overflow:hidden;
+}
+
 div#messageArea {
   height : 110px;
   width : 500px;
@@ -18,16 +29,44 @@ div#initialMask {
   top : 0; left : 0;
 }
 
-body {
-  background:url(./back.jpg) 50% 50% #FFF no-repeat;
-  overflow:hidden;
-}
 
 div#contentArea {
+  position : absolute;
   overflow:hidden;
+  z-index : 1000;
+  top : 0; left : 0;
 }
 
 div#contentArea img {
   margin : 10px;
   float : left;
+}
+
+div#aboutUsArea {
+  z-index : 9999;
+  padding : 5px 0 2px 0;
+  text-align : center;
+  color : #FFF;
+  background-color : #111;
+  position : fixed;
+  bottom : 0px; left : 60px;
+  width : 100px;
+  height : 27px;
+
+  -webkit-border-top-left-radius: 7px;
+  -webkit-border-top-right-radius: 7px;
+  -webkit-border-bottom-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-radius-topleft: 7px;
+  -moz-border-radius-topright: 7px;
+  -moz-border-radius-bottomright: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+div#aboutUsArea a {
+  color : #FFF;
 }

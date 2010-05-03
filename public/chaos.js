@@ -1,3 +1,11 @@
+var SETTINGS = {
+  MAX_KEEP_IMAGES_COUNT : 200,
+  MAX_RETREIVE_COUNT : 70,
+  IMAGE_RETREIVE_INTERVAL : 5000,
+  FLASH_EFFECT_INTERVAL : 130000,
+  MESSAGE_SPEED : 40
+}
+
 var MESSAGES = {
   INIT_SCREEN : 'Initializing a chaos proxy viewer...',
   INIT_SCREEN_FINISH : '......Done'
@@ -5,7 +13,9 @@ var MESSAGES = {
 
 var context = {
   height : 0,
-  width : 0
+  width : 0,
+  loadedImagesCount : 0,
+  lastRetreiveTime : "1171815102", // An enough old time for first time
 } 
 
 var imageTarget = $('#contentArea');
@@ -22,10 +32,14 @@ function initScreen() {
     'height' : context.screenHeight,
     'width' :  context.screenWidth,
   });
+  $('#dummy').css({
+    'height' : context.screenHeight
+  });
   $('#contentArea').css({
     'height' : context.screenHeight,
     'width' :  context.screenWidth
   });
+  $('#aboutUsArea').fadeTo(0, 0.7).show();
   $(document.body).css({
     'background' : 'url(./back.jpg) 50% 50% #FFF no-repeat'
   });
@@ -47,7 +61,7 @@ function flashBackimage() {
     mask.fadeTo('normal', 0.4, function() {
       mask.fadeTo('slow', 0.01);
     });
-  }, 10000);
+  }, SETTINGS.FLASH_EFFECT_INTERVAL);
 }
 
 function initMessageArea(callback) {
@@ -69,7 +83,7 @@ function showMessage(target, msg, callback) {
       clearInterval(time);
       callback();
     }
-  }, 40);
+  }, SETTINGS.MESSAGE_SPEED);
 }
 
 var blockLoad = false;
@@ -80,13 +94,13 @@ function setupImageLoader() {
     if (!blockLoad) {
       getImages(manipulateImage);
     }
-  }, 5000);
+  }, SETTINGS.IMAGE_RETREIVE_INTERVAL);
 }
 
 function manipulateImage(data) {
   if (data.length == 0) {return;}
   blockLoad = true;
-  lastRetreiveTime = data[0].accessed_at;
+  context.lastRetreiveTime = data[0].accessed_at;
   var len = data.length;
   var i = 0;
   var timer = setInterval(function() {
@@ -99,9 +113,6 @@ function manipulateImage(data) {
 }
 
 
-var lastRetreiveTime = "1171815102";
-var limit = '70';
-
 function getImages(callback) {
   if (location.hostname == 'chaos.yuiseki.net') {
     getImagesFromSameDomain(callback);
@@ -112,15 +123,17 @@ function getImages(callback) {
 
 function getImagesFromSameDomain(callback) {
   var baseUrl = '/update/';
-  $.getJSON(baseUrl + lastRetreiveTime + '?limit=' + limit, {}, function(response, status) {
+  var url = baseUrl + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
+  $.getJSON(url, {}, function(response, status) {
     callback(response);
   });
 }
 
 function getImagesFromAnotherDomain(callback) {
   var baseUrl = 'http://chaos.yuiseki.net/update/';
+  var url = baseUrl + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
   var xhr = new XMLHttpRequest();
-  xhr.open("GET", baseUrl + lastRetreiveTime + '?limit=' + limit, true);
+  xhr.open("GET", url, true);
   xhr.onreadystatechange = function(){
     if ( xhr.readyState == 4 ) {
       if ( xhr.status == 200 ) {
