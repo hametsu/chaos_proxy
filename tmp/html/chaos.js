@@ -24,8 +24,7 @@ function initScreen() {
   });
   $('#contentArea').css({
     'height' : context.screenHeight,
-    'width' :  context.screenWidth,
-    'over-flow' : 'hidden'
+    'width' :  context.screenWidth
   });
   $(document.body).css({
     'background' : 'url(./back.jpg) 50% 50% #FFF no-repeat'
@@ -86,7 +85,6 @@ function setupImageLoader() {
 
 function manipulateImage(data) {
   if (data.length == 0) {return;}
-  console.dir(data);
   blockLoad = true;
   lastRetreiveTime = data[0].accessed_at;
   var len = data.length;
@@ -102,11 +100,9 @@ function manipulateImage(data) {
 
 
 var lastRetreiveTime = "1171815102";
-var limit = '50';
-var baseUrl = 'http://chaos.yuiseki.net/update/';
+var limit = '70';
 
 function getImages(callback) {
-  console.info('start ajax');
   if (location.hostname == 'chaos.yuiseki.net') {
     getImagesFromSameDomain(callback);
   } else {
@@ -115,12 +111,14 @@ function getImages(callback) {
 }
 
 function getImagesFromSameDomain(callback) {
+  var baseUrl = '/update/';
   $.getJSON(baseUrl + lastRetreiveTime + '?limit=' + limit, {}, function(response, status) {
     callback(response);
   });
 }
 
 function getImagesFromAnotherDomain(callback) {
+  var baseUrl = 'http://chaos.yuiseki.net/update/';
   var xhr = new XMLHttpRequest();
   xhr.open("GET", baseUrl + lastRetreiveTime + '?limit=' + limit, true);
   xhr.onreadystatechange = function(){
@@ -129,8 +127,8 @@ function getImagesFromAnotherDomain(callback) {
         var data = JSON.parse(xhr.responseText);
         callback(data);
       } else {
-        console.error('Error #getImageFromAnotherDomain');
-        console.error(xhr.responseText);
+        //console.error('Error #getImageFromAnotherDomain');
+        //console.error(xhr.responseText);
       }
     }
   };

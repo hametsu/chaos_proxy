@@ -20,11 +20,11 @@ div#initialMask {
 
 body {
   background:url(./back.jpg) 50% 50% #FFF no-repeat;
-  over-flow:hidden;
+  overflow:hidden;
 }
 
 div#contentArea {
-  over-flow:hidden;
+  overflow:hidden;
 }
 
 div#contentArea img {
