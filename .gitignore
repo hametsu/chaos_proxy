@@ -1,5 +1,5 @@
 ttserv_img_ctl
-webrick.log
+*.log
 settings.yaml
 db/*
 nohup.out

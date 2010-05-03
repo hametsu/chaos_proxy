@@ -83,9 +83,11 @@ end
 
 
 get '/update/:unixtime' do
+  limit = @params.fetch("limit", "10").to_i
+  limit = 100 if limit > 100
   headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   # unixtimeより新しい画像URLがあったらJSONで返す
-  @elements = get_recents(10, 0, params[:unixtime])
+  @elements = get_recents(limit, 0, params[:unixtime])
   return @elements.to_json
 end
 
