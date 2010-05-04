@@ -12,6 +12,11 @@ var MESSAGES = {
   INIT_SCREEN_FINISH : '......Done'
 }
 
+
+var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
+
+var imageTarget = $('#contentArea');
+
 var context = {
   height : 0,
   width : 0,
@@ -19,26 +24,21 @@ var context = {
   lastRetreiveTime : "1171815102", // An enough old time for first time
 } 
 
-var imageTarget = $('#contentArea');
-
-/**********************************************/
-
 /**
- * Object for name space
+ * Name space for functions
  */
 var Chaos = {};
 
+/**********************************************/
 
 $(function() {
-  Chaos.bootStrap();
+  Chaos.bootstrap();
 });
 
-
-/*
- * Boot Strap for Application
- * @static
+/**
+ * Bootstrap of this Application
  */
-Chaos.bootStrap = function() {
+Chaos.bootstrap = function() {
 
   initMessageArea(initScreen);
 
@@ -65,8 +65,8 @@ Chaos.bootStrap = function() {
       $('#initialMask').fadeTo('slow', 0.01, function() {
         Chaos.effect.pourText($('#message2'), MESSAGES.INIT_SCREEN_FINISH, function() {
           clearMessageArea();
-          setupImageLoader();
           flashBackimage();
+          Chaos.setupImageLoader();
         });
       });
     }, 1000);
@@ -92,7 +92,13 @@ Chaos.bootStrap = function() {
   }
 }
 
+/**
+ * Effect functions
+ */
 Chaos.effect = {
+  /**
+   *
+   */
   pourText : function(target, text, callback) {
     var len = text.length;
     var i=0;
@@ -103,83 +109,150 @@ Chaos.effect = {
         callback();
       }
     }, SETTINGS.MESSAGE_SPEED);
+  },
+
+  /**
+   *
+   */
+  pourMessages : function(target, msgArr, callback) {
+    // todo 
   }
 }
 
 
+/**
+ * Create an image loader
+ */
+Chaos.setupImageLoader = function() {
+  var imageLoader = new Chaos.Loader(imageFilter); 
+  var blockLoad = true;
 
-var blockLoad = false;
-
-function setupImageLoader() {
-  getImages(manipulateImage);
+  imageLoader.load(createUri(), manipulateImage);
   setInterval(function() {
     if (!blockLoad) {
-      getImages(manipulateImage);
+      imageLoader.load(createUri(), manipulateImage);
     }
   }, SETTINGS.IMAGE_RETREIVE_INTERVAL);
-}
 
-function manipulateImage(data) {
-  data = filterImages(data);
-  if (data.length == 0) {return;}
-  blockLoad = true;
-  context.lastRetreiveTime = data[0].accessed_at;
-  data.reverse();
-  var len = data.length;
-  var i = 0;
-  var timer = setInterval(function() {
-    imageTarget.prepend($('<img>').attr('src', data[i].uri));
-    if (++i>=len) {
-      clearInterval(timer);
-      blockLoad = false;
-    }
-  }, 200);
-}
+  function createUri() {
+    return '/update/' + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
+  }
 
-var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
+  function imageFilter(arr) {
+    return arr.filter(function(data) {
+      return !REGEXP_FILTER_IMAGE_URL.test(data.uri)
+    });
+  }
 
-function filterImages(arr) {
-  return arr.filter(function(data) {
-    return !REGEXP_FILTER_IMAGE_URL.test(data.uri)
-  });
-}
-
-
-function getImages(callback) {
-  if (location.hostname == 'chaos.yuiseki.net') {
-    getImagesFromSameDomain(callback);
-  } else {
-    getImagesFromAnotherDomain(callback);
+  function manipulateImage(data) {
+    blockLoad = true;
+    context.lastRetreiveTime = data[0].accessed_at;
+    data.reverse();
+    var len = data.length;
+    var i = 0;
+    var timer = setInterval(function() {
+      imageTarget.prepend($('<img>').attr('src', data[i].uri));
+      if (++i>=len) {
+        clearInterval(timer);
+        blockLoad = false;
+      }
+    }, 200);
   }
 }
 
-function getImagesFromSameDomain(callback) {
-  var baseUrl = '/update/';
-  var url = baseUrl + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
-  $.getJSON(url, {}, function(response, status) {
-    callback(response);
-  });
+
+/**
+ * A JSON loader for same/cross domain
+ *
+ * @class Chaos.Loader
+ * @params {Function} filterFn Function for data filter
+ */
+Chaos.Loader = function(filterFn) {
+  Chaos.Loader.prototype.initialize.call(this, filterFn);
 }
 
-function getImagesFromAnotherDomain(callback) {
-  var baseUrl = 'http://chaos.yuiseki.net/update/';
-  var url = baseUrl + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", url, true);
-  xhr.onreadystatechange = function(){
-    if ( xhr.readyState == 4 ) {
-      if ( xhr.status == 200 ) {
-        var data = JSON.parse(xhr.responseText);
-        callback(data);
-      } else {
-        //console.error('Error #getImageFromAnotherDomain');
-        //console.error(xhr.responseText);
-      }
+Chaos.Loader.prototype = {
+  /**
+   * @params {Function} filterFn
+   */
+  initialize : function(filterFn) {
+    if (location.hostname == 'chaos.yuiseki.net') {
+      this._load = this._loadFromSameDomain; 
+    } else {
+      this._load = this._loadFromAnotherDomain;
     }
-  };
-  xhr.send(null);
+    this.filterFn = filterFn;
+  },
+
+  /**
+   * Load data and returns filtered result
+   * @params {String} uri 
+   * @params {Function} callback
+   */
+  load : function(uri, callback) {
+    this._load(uri, function(data) {
+      if (this.filterFn) {
+        //console.info('beforeFilter:' + data.length);
+        data = this.filterFn(data);
+        //console.info('afterFilter:' + data.length);
+      }
+      if (data.length > 0) {
+        callback(data);
+      }
+    });
+  },
+
+  _load : null,
+
+  /**
+   * Gets server data from specified uri.
+   * This method is effective under 'chaos.yuiseki.net' only.
+   * @params {String} uri 
+   * @params {Function} callback
+   */
+  _loadFromSameDomain : function(uri, callback) {
+    var self = this;
+    $.getJSON(uri, {}, function(response, status) {
+      callback.call(self, response);
+    });
+  },
+
+  /**
+   * For test.
+   * This method is effective under another domain (ex.localhsot)
+   * @params {String} uri 
+   * @params {Function} callback
+   */
+  _loadFromAnotherDomain : function(uri, callback) {
+    var baseUrl = 'http://chaos.yuiseki.net';
+    var url = baseUrl + uri;
+    var self = this;
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
+    xhr.onreadystatechange = function(){
+      if ( xhr.readyState == 4 ) {
+        if ( xhr.status == 200 ) {
+          var data = JSON.parse(xhr.responseText);
+          callback.call(self, data);
+        } else {
+          console.error('Error #getImageFromAnotherDomain');
+          console.error(xhr.responseText);
+        }
+      }
+    };
+    xhr.send(null);
+  }
 }
+
 
 var lng = {
   emptyFn : function(){}
+}
+
+if ($.browser.msie) {
+  Array.prototype.filter = function(callback,thisObject){
+      for(var i=0,res=[],len=this.length;i<len;i++)
+          callback.call(thisObject,this[i],i,this) && res.push(this[i]);
+      return res
+  }
 }
