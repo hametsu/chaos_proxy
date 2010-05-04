@@ -52,24 +52,52 @@ Chaos.bootstrap = function() {
     $('#dummy').css({
       'height' : context.screenHeight
     });
+    $('#background').css({
+      'height' : context.screenHeight + 50,
+      'width' :  context.screenWidth + 50,
+      'top' : -25,
+      'left' : -25,
+      'background' : 'url(./back.jpg) 50% 50% #FFF repeat'
+    });
     $('#contentArea').css({
       'height' : context.screenHeight,
       'width' :  context.screenWidth
     });
-    $('#aboutUsArea').fadeTo(0, 0.7).show();
-    $(document.body).css({
-      'background' : 'url(./back.jpg) 50% 50% #FFF no-repeat'
+    $('#aboutUsArea').css({
+      'top' : '180px',
+      'right' : '-186px'
     });
+    $('#aboutChaosProxyArea').css({
+      'top' : '225px',
+      'right' : '-186px'
+    });
+    $('div.slideMenu').fadeTo(0, 0.8).show().hover(function() {
+      $(this).animate({
+        'right' : '-1px',
+        'opacity' : 1
+      }, 'normal');
+    }, function() {
+      $(this).animate({
+        'right' : '-186px',
+        'opacity' : 0.8
+      }, 'normal');
+    });
+
     // Wait for background image load
     setTimeout(function() {
       $('#initialMask').fadeTo('slow', 0.01, function() {
         Chaos.effect.pourText($('#message2'), MESSAGES.INIT_SCREEN_FINISH, function() {
           clearMessageArea();
           flashBackimage();
+          animateBackground();
           Chaos.setupImageLoader();
         });
       });
     }, 1000);
+  }
+
+  function animateBackground() {
+    // todo
   }
 
   function flashBackimage() {

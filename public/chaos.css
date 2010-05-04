@@ -5,8 +5,12 @@ a:hover {
 
 /******************** body ***********************/
 body {
-  background:url(./back.jpg) 50% 50% #FFF no-repeat;
   overflow:hidden;
+}
+
+div#background {
+  position : absolute;
+  z-index : 0;
 }
 
 div#messageArea {
@@ -42,31 +46,37 @@ div#contentArea img {
   float : left;
 }
 
-div#aboutUsArea {
+div.slideMenu {
   z-index : 9999;
-  padding : 5px 0 2px 0;
-  text-align : center;
+  padding : 5px 0 5px 4px;
   color : #FFF;
-  background-color : #111;
+  background-color : #888;
   position : fixed;
-  bottom : 0px; left : 60px;
-  width : 100px;
+  width : 210px;
   height : 27px;
+  border : 1px solid #FFF;
 
   -webkit-border-top-left-radius: 7px;
-  -webkit-border-top-right-radius: 7px;
+  -webkit-border-top-right-radius: 0px;
   -webkit-border-bottom-right-radius: 0px;
-  -webkit-border-bottom-left-radius: 0px;
+  -webkit-border-bottom-left-radius: 7px;
   -moz-border-radius-topleft: 7px;
-  -moz-border-radius-topright: 7px;
+  -moz-border-radius-topright: 0px;
   -moz-border-radius-bottomright: 0px;
-  -moz-border-radius-bottomleft: 0px;
+  -moz-border-radius-bottomleft: 7px;
   border-top-left-radius: 7px;
-  border-top-right-radius: 7px;
+  border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-  border-bottom-left-radius: 0px;
+  border-bottom-left-radius: 7px;
+}
+div.slideMenu img {
+  float : left;
+  margin-right : 10px;
 }
 
-div#aboutUsArea a {
+div.slideMenu a {
   color : #FFF;
+  font-weight : bold;
+  display : block;
+  margin : 5px 0 3px 0;
 }
