@@ -1,6 +1,7 @@
+/************** Global valiables **************/
 var SETTINGS = {
   MAX_KEEP_IMAGES_COUNT : 200,
-  MAX_RETREIVE_COUNT : 70,
+  MAX_RETREIVE_COUNT : 80,
   IMAGE_RETREIVE_INTERVAL : 5000,
   FLASH_EFFECT_INTERVAL : 13000,
   MESSAGE_SPEED : 40
@@ -20,71 +21,92 @@ var context = {
 
 var imageTarget = $('#contentArea');
 
+/**********************************************/
+
+/**
+ * Object for name space
+ */
+var Chaos = {};
+
 
 $(function() {
-  initMessageArea(initScreen);
+  Chaos.bootStrap();
 });
 
-function initScreen() {
-  context.screenHeight = $(window).height();
-  context.screenWidth = $(window).width();
-  $('#initialMask').css({
-    'height' : context.screenHeight,
-    'width' :  context.screenWidth,
-  });
-  $('#dummy').css({
-    'height' : context.screenHeight
-  });
-  $('#contentArea').css({
-    'height' : context.screenHeight,
-    'width' :  context.screenWidth
-  });
-  $('#aboutUsArea').fadeTo(0, 0.7).show();
-  $(document.body).css({
-    'background' : 'url(./back.jpg) 50% 50% #FFF no-repeat'
-  });
-  // Wait for background image load
-  setTimeout(function() {
-    $('#initialMask').fadeTo('slow', 0.01, function() {
-      showMessage($('#message2'), MESSAGES.INIT_SCREEN_FINISH, function() {
-        clearMessageArea();
-        setupImageLoader();
-        flashBackimage();
+
+/*
+ * Boot Strap for Application
+ * @static
+ */
+Chaos.bootStrap = function() {
+
+  initMessageArea(initScreen);
+
+  function initScreen() {
+    context.screenHeight = $(window).height();
+    context.screenWidth = $(window).width();
+    $('#initialMask').css({
+      'height' : context.screenHeight,
+      'width' :  context.screenWidth,
+    });
+    $('#dummy').css({
+      'height' : context.screenHeight
+    });
+    $('#contentArea').css({
+      'height' : context.screenHeight,
+      'width' :  context.screenWidth
+    });
+    $('#aboutUsArea').fadeTo(0, 0.7).show();
+    $(document.body).css({
+      'background' : 'url(./back.jpg) 50% 50% #FFF no-repeat'
+    });
+    // Wait for background image load
+    setTimeout(function() {
+      $('#initialMask').fadeTo('slow', 0.01, function() {
+        Chaos.effect.pourText($('#message2'), MESSAGES.INIT_SCREEN_FINISH, function() {
+          clearMessageArea();
+          setupImageLoader();
+          flashBackimage();
+        });
       });
-    });
-  }, 1000);
+    }, 1000);
+  }
+
+  function flashBackimage() {
+    var mask = $('#initialMask');
+    setInterval(function() {
+      mask.fadeTo('normal', 0.4, function() {
+        mask.fadeTo('slow', 0.01);
+      });
+    }, SETTINGS.FLASH_EFFECT_INTERVAL);
+  }
+
+  function initMessageArea(callback) {
+    $('#messageArea').fadeTo('normal', 0.6, function() {
+      Chaos.effect.pourText($('#message1'), MESSAGES.INIT_SCREEN, callback);
+    }).show();
+  }
+
+  function clearMessageArea() {
+    $('#messageArea').fadeOut(1000);
+  }
 }
 
-function flashBackimage() {
-  var mask = $('#initialMask');
-  setInterval(function() {
-    mask.fadeTo('normal', 0.4, function() {
-      mask.fadeTo('slow', 0.01);
-    });
-  }, SETTINGS.FLASH_EFFECT_INTERVAL);
+Chaos.effect = {
+  pourText : function(target, text, callback) {
+    var len = text.length;
+    var i=0;
+    var time = setInterval(function() {
+      target.text(text.slice(0, i));
+      if (i++>=len) {
+        clearInterval(time);
+        callback();
+      }
+    }, SETTINGS.MESSAGE_SPEED);
+  }
 }
 
-function initMessageArea(callback) {
-  $('#messageArea').fadeTo('normal', 0.6, function() {
-    showMessage($('#message1'), MESSAGES.INIT_SCREEN, callback);
-  }).show();
-}
 
-function clearMessageArea() {
-  $('#messageArea').fadeOut(1000);
-}
-
-function showMessage(target, msg, callback) {
-  var len = msg.length;
-  var i=0;
-  var time = setInterval(function() {
-    target.text(msg.slice(0, i));
-    if (i++>=len) {
-      clearInterval(time);
-      callback();
-    }
-  }, SETTINGS.MESSAGE_SPEED);
-}
 
 var blockLoad = false;
 
@@ -98,9 +120,11 @@ function setupImageLoader() {
 }
 
 function manipulateImage(data) {
+  data = filterImages(data);
   if (data.length == 0) {return;}
   blockLoad = true;
   context.lastRetreiveTime = data[0].accessed_at;
+  data.reverse();
   var len = data.length;
   var i = 0;
   var timer = setInterval(function() {
@@ -110,6 +134,14 @@ function manipulateImage(data) {
       blockLoad = false;
     }
   }, 200);
+}
+
+var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
+
+function filterImages(arr) {
+  return arr.filter(function(data) {
+    return !REGEXP_FILTER_IMAGE_URL.test(data.uri)
+  });
 }
 
 
