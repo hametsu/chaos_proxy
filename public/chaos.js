@@ -14,8 +14,6 @@ var MESSAGES = {
   DETECTED_IE : 'Internet explorer cannnot boot this page.'
 }
 
-var imageTarget = $('#contentArea');
-var imagePool = $('#imagePool');
 
 var context = {
   enableCSSAnimation : false,
@@ -170,7 +168,8 @@ Chaos.effect = {
 
   getImageZIndex : function(width, height) {
     var size = width + height;
-    return size > 500 ? 100 :
+    return size > 600 ? 100 :
+      size > 500 ? 105 :
       size > 400 ? 110 :
       size > 300 ? 120 :
       size > 200 ? 130 :
@@ -186,15 +185,21 @@ Chaos.effect = {
  */
 Chaos.setupImageLoader = function() {
   var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
-  var blockLoad = true;
+
+  var blockLoad = false;
+
+  var imageLayerLarge  = $('#contentArea div.z1');
+  var imageLayerMiddle = $('#contentArea div.z2');
+  var imageLayerSmall  = $('#contentArea div.z3');
+  var imagePool = $('#imagePool');
 
   var imageLoader = new Chaos.Loader(imageFilter); 
-  imageLoader.load(createUri(), manipulateImage);
-  setInterval(function() {
+  (function() {
     if (!blockLoad) {
       imageLoader.load(createUri(), manipulateImage);
     }
-  }, SETTINGS.IMAGE_RETREIVE_INTERVAL);
+    setTimeout(arguments.callee, SETTINGS.IMAGE_RETREIVE_INTERVAL);
+  })();
 
   function createUri() {
     return '/update/' + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
@@ -226,18 +231,27 @@ Chaos.setupImageLoader = function() {
     var timer = setInterval(function() {
       var jqObj = $('<img>').attr('src', data[i].uri);
       storeImages(jqObj);
+      imagePool.prepend(jqObj);
       jqObj.bind('load', function(a) {
-        var width = a.srcElement.offsetWidth;
-        var height = a.srcElement.offsetHeight;
+        var width = a.target.offsetWidth;
+        var height = a.target.offsetHeight;
         var posXY = Chaos.effect.getRandomeXY(width, height);
+        var zIndex = Chaos.effect.getImageZIndex(width, height);
         jqObj.css({
           'top' : posXY.y,
           'left' : posXY.x,
-          'zIndex' : Chaos.effect.getImageZIndex(width, height)
+          'zIndex' : zIndex
         });
-        imageTarget.append(jqObj);
+        if (zIndex > 140) {
+          imageLayerSmall.append(jqObj);
+        } else
+        if (zIndex > 110) {
+          imageLayerMiddle.append(jqObj);
+        } else {
+          imageLayerLarge.append(jqObj);
+        }
+        //imageTarget.append(jqObj);
       });
-      imagePool.prepend(jqObj);
       if (++i>=len) {
         clearInterval(timer);
         blockLoad = false;
