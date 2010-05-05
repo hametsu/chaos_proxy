@@ -9,7 +9,9 @@ var SETTINGS = {
 
 var MESSAGES = {
   INIT_SCREEN : 'Initializing a chaos proxy viewer...',
-  INIT_SCREEN_FINISH : '......Done'
+  INIT_SCREEN_FINISH : '......Done',
+  ERROR : 'Error!!',
+  DETECTED_IE : 'Internet explorer cannnot boot this page.'
 }
 
 
@@ -21,7 +23,7 @@ var context = {
   height : 0,
   width : 0,
   loadedImagesCount : 0,
-  lastRetreiveTime : "1171815102", // An enough old time for first time
+  lastRetreiveTime : "1171815102" // An enough old time for first time
 } 
 
 /**
@@ -47,7 +49,7 @@ Chaos.bootstrap = function() {
     context.screenWidth = $(window).width();
     $('#initialMask').css({
       'height' : context.screenHeight,
-      'width' :  context.screenWidth,
+      'width' :  context.screenWidth
     });
     $('#dummy').css({
       'height' : context.screenHeight
@@ -86,14 +88,28 @@ Chaos.bootstrap = function() {
     // Wait for background image load
     setTimeout(function() {
       $('#initialMask').fadeTo('slow', 0.01, function() {
-        Chaos.effect.pourText($('#message2'), MESSAGES.INIT_SCREEN_FINISH, function() {
-          clearMessageArea();
-          flashBackimage();
-          animateBackground();
-          Chaos.setupImageLoader();
-        });
+        if ($.browser.msie) {
+          onFailure();
+        } else {
+          onSuccess();
+        }
       });
     }, 1000);
+  }
+
+  function onSuccess() {
+    Chaos.effect.pourText($('#message2'), MESSAGES.INIT_SCREEN_FINISH, function() {
+      clearMessageArea();
+      flashBackimage();
+      animateBackground();
+      Chaos.setupImageLoader();
+    });
+  }
+
+  function onFailure() {
+    Chaos.effect.pourText($('#message2'), MESSAGES.ERROR, function() {
+      Chaos.effect.pourText($('#message3'), MESSAGES.DETECTED_IE, lng.emptyFn);
+    });
   }
 
   function animateBackground() {
@@ -277,10 +293,3 @@ var lng = {
   emptyFn : function(){}
 }
 
-if ($.browser.msie) {
-  Array.prototype.filter = function(callback,thisObject){
-      for(var i=0,res=[],len=this.length;i<len;i++)
-          callback.call(thisObject,this[i],i,this) && res.push(this[i]);
-      return res
-  }
-}
