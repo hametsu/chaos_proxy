@@ -31,9 +31,7 @@ Chaos.Loader.prototype = {
       if (this.filterFn) {
         data = this.filterFn(data);
       }
-      if (data.length > 0) {
-        callback(data);
-      }
+      callback(data);
     });
   },
 

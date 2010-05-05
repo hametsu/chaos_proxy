@@ -1,8 +1,9 @@
 /************** Global valiables **************/
 var SETTINGS = {
-  MAX_KEEP_IMAGES_COUNT : 200,
+  MAX_KEEP_IMAGES_COUNT : 100,
   MAX_RETREIVE_COUNT : 80,
   IMAGE_RETREIVE_INTERVAL : 5000,
+  IMAGE_RETREIVE_INTERVAL_IDOL : 10000,
   FLASH_EFFECT_INTERVAL : 13000,
   MESSAGE_SPEED : 40
 }
@@ -11,7 +12,10 @@ var MESSAGES = {
   INIT_SCREEN : 'Initializing a chaos proxy viewer...',
   INIT_SCREEN_FINISH : '......Done',
   ERROR : 'Error!!',
-  DETECTED_IE : 'Internet explorer cannnot boot this page.'
+  DETECTED_IE : 'Internet explorer cannnot boot this page.',
+  DETECTED_FIREFOX : 'Detected Firefox...',
+  DETECTED_OPERA : 'Detected Opera....',
+  ANIMATION_OFF : 'Animation : OFF'
 }
 
 
@@ -37,14 +41,16 @@ Chaos.effect = {
   /**
    *
    */
-  pourText : function(target, text, callback) {
+  pourText : function(targetBox, text, callback) {
     var len = text.length;
     var i=0;
+    var target = $('<span>');
+    targetBox.append(target).append($('<br />'));
     var time = setInterval(function() {
       target.text(text.slice(0, i));
       if (i++>=len) {
         clearInterval(time);
-        callback();
+        if (callback) callback();
       }
     }, SETTINGS.MESSAGE_SPEED);
   },
@@ -53,7 +59,15 @@ Chaos.effect = {
    *
    */
   pourMessages : function(target, msgArr, callback) {
-    // todo 
+    (function pourMessage() {
+      Chaos.effect.pourText(target, msgArr.shift(), function() {
+        if (msgArr.length > 0) {
+          pourMessage();
+        } else {
+          if (callback) callback();
+        }
+      });
+    })();
   },
 
   getRandomeXY : function(imageWidth, imageHeight) {

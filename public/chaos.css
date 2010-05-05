@@ -28,8 +28,8 @@ div.moveBackGround {
 }
 
 /********************* dialog *******************/
-div#messageArea {
-  height : 110px;
+div#bootMessageArea {
+  height : 140px;
   width : 500px;
   background-color:#111;
   border : 1px solid #333;
@@ -119,6 +119,10 @@ div#contentArea div.z3 {
   0% { opacity : 0}
   100% { opacity : 1 }
 }
+@-webkit-keyframes deleteImg {
+  0% { opacity : 1}
+  100% { opacity : 0 }
+}
 div#contentArea img {
   position : absolute;
   display : block;
@@ -127,6 +131,10 @@ div#contentArea img {
   -webkit-animation-name: showImg;
   -webkit-animation-duration: 1s;
 }
+div#contentArea img.delete {
+  -webkit-animation-name: deleteImg;
+}
+
 
 /******************* sideMenu **********************/
 div.slideMenu {

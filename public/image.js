@@ -5,6 +5,7 @@ Chaos.setupImageLoader = function() {
   var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
 
   var blockLoad = false;
+  var idol = false;
 
   var imageLayerLarge  = $('#contentArea div.z1');
   var imageLayerMiddle = $('#contentArea div.z2');
@@ -16,7 +17,7 @@ Chaos.setupImageLoader = function() {
     if (!blockLoad) {
       imageLoader.load(createUri(), renderImages);
     }
-    setTimeout(arguments.callee, SETTINGS.IMAGE_RETREIVE_INTERVAL);
+    setTimeout(arguments.callee, SETTINGS[idol ? 'IMAGE_RETREIVE_INTERVAL_IDOL' : 'IMAGE_RETREIVE_INTERVAL']);
   })();
 
   function createUri() {
@@ -33,14 +34,32 @@ Chaos.setupImageLoader = function() {
     context.lastRetreiveTime = d[0].accessed_at;
   }
 
-  function storeImages(jqObj) {
+  function storeImage(jqObj) {
     context.loadedImages.push(jqObj);
     if (context.loadedImages.length > SETTINGS.MAX_KEEP_IMAGES_COUNT) {
-      context.loadedImages.shift().remove();
+      removeImage(context.loadedImages.shift());
+    }
+  }
+
+  function removeImage(jqObj) {
+    if (context.enableCSSAnimation) {
+      jqObj.addClass('delete');
+      setTimeout(function() {
+        jqObj.remove();
+      }, 1000);
+    } else {
+      jqObj.fadeOut('normal', function() {
+        jqObj.remove();
+      });
     }
   }
 
   function renderImages(data) {
+    if (data.length == 0) {
+      idol = true;
+      return;
+    }
+    idol = false;
     blockLoad = true;
     setLatestImageRetreiveTime(data);
     data.reverse();
@@ -48,7 +67,8 @@ Chaos.setupImageLoader = function() {
     var i = 0;
     var timer = setInterval(function() {
       var jqObj = $('<img>').attr('src', data[i].uri);
-      storeImages(jqObj);
+      storeImage(jqObj);
+      // Put to the tmp area (invisible) and waiting load the image
       imagePool.prepend(jqObj);
       jqObj.bind('load', function(a) {
         var width = a.target.offsetWidth;
@@ -67,6 +87,9 @@ Chaos.setupImageLoader = function() {
           imageLayerMiddle.append(jqObj);
         } else {
           imageLayerLarge.append(jqObj);
+        }
+        if (!context.enableCSSAnimation) {
+          jqObj.hide().fadeIn('normal');
         }
       });
       if (++i>=len) {

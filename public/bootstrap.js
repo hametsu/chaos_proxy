@@ -7,6 +7,8 @@ $(function() {
  */
 Chaos.bootstrap = function() {
 
+  var messageBox = $('#bootMessageArea');
+
   initMessageArea(initScreen);
 
   function initScreen() {
@@ -62,7 +64,14 @@ Chaos.bootstrap = function() {
   }
 
   function onSuccess() {
-    Chaos.effect.pourText($('#message2'), MESSAGES.INIT_SCREEN_FINISH, function() {
+    msgs = [];
+    if ($.browser.mozilla) {
+      msgs.push(MESSAGES.DETECTED_FIREFOX);
+      msgs.push(MESSAGES.ANIMATION_OFF);
+    } 
+    msgs.push(MESSAGES.INIT_SCREEN_FINISH);
+
+    Chaos.effect.pourMessages(messageBox, msgs, function() {
       clearMessageArea();
       flashBackimage();
       animateBackground();
@@ -71,9 +80,7 @@ Chaos.bootstrap = function() {
   }
 
   function onFailure() {
-    Chaos.effect.pourText($('#message2'), MESSAGES.ERROR, function() {
-      Chaos.effect.pourText($('#message3'), MESSAGES.DETECTED_IE, lng.emptyFn);
-    });
+    Chaos.effect.pourMessages(messageBox, [MESSAGES.ERROR, MESSAGES.DETECTED_IE]);
   }
 
   function animateBackground() {
@@ -92,13 +99,13 @@ Chaos.bootstrap = function() {
   }
 
   function initMessageArea(callback) {
-    $('#messageArea').fadeTo('normal', 0.6, function() {
-      Chaos.effect.pourText($('#message1'), MESSAGES.INIT_SCREEN, callback);
+    messageBox.fadeTo('normal', 0.6, function() {
+      Chaos.effect.pourText(messageBox, MESSAGES.INIT_SCREEN, callback);
     }).show();
   }
 
   function clearMessageArea() {
-    $('#messageArea').fadeOut(1000);
+    messageBox.fadeOut(1000);
   }
 }
 
