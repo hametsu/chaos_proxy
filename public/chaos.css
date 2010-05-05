@@ -12,6 +12,19 @@ div#background {
   position : absolute;
   z-index : 0;
 }
+@-webkit-keyframes moveBackGround {
+  0% { top : 0px; left : 0px; }
+  50% { top : -35px; left : 0px; }
+  100% { top : 0px; left : 0px; }
+}
+div.moveBackGround {
+  top : 0px;
+  left : 0px;
+  -webkit-animation-timing-function: ease-out;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-name: moveBackGround;
+  -webkit-animation-duration: 15s;
+}
 
 div#messageArea {
   height : 110px;

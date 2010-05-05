@@ -17,6 +17,7 @@ var MESSAGES = {
 var imageTarget = $('#contentArea');
 
 var context = {
+  enableCSSAnimation : false,
   height : 0,
   width : 0,
   loadedImages : [],
@@ -42,6 +43,7 @@ Chaos.bootstrap = function() {
   initMessageArea(initScreen);
 
   function initScreen() {
+    context.enableCSSAnimation = $.browser.safari;
     context.screenHeight = $(window).height();
     context.screenWidth = $(window).width();
     $('#initialMask').css({
@@ -54,8 +56,6 @@ Chaos.bootstrap = function() {
     $('#background').css({
       'height' : context.screenHeight + 50,
       'width' :  context.screenWidth + 50,
-      'top' : -25,
-      'left' : -25,
       'background' : 'url(./back.jpg) 50% 50% #FFF repeat'
     });
     $('#contentArea').css({
@@ -110,7 +110,9 @@ Chaos.bootstrap = function() {
   }
 
   function animateBackground() {
-    // todo
+    if (context.enableCSSAnimation) {
+      $('#background').addClass('moveBackGround');
+    }
   }
 
   function flashBackimage() {
@@ -193,7 +195,6 @@ Chaos.setupImageLoader = function() {
   function storeImages(jqObj) {
     context.loadedImages.push(jqObj);
     if (context.loadedImages.length > SETTINGS.MAX_KEEP_IMAGES_COUNT) {
-      console.info('remove!!');
       context.loadedImages.shift().remove();
     }
   }
@@ -248,9 +249,7 @@ Chaos.Loader.prototype = {
   load : function(uri, callback) {
     this._load(uri, function(data) {
       if (this.filterFn) {
-        //console.info('beforeFilter:' + data.length);
         data = this.filterFn(data);
-        //console.info('afterFilter:' + data.length);
       }
       if (data.length > 0) {
         callback(data);
