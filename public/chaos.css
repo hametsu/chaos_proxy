@@ -46,19 +46,31 @@ div#initialMask {
   top : 0; left : 0;
 }
 
+div#imagePool {
+  position : fixed;
+  overflow : hidden;
+  z-index : 0;
+  top : -150px; left : -150px;
+  width : 10px;
+  height : 10px;
+  /*border : 2px solid #000;*/
+}
+
 
 div#contentArea {
   position : absolute;
   overflow:hidden;
   z-index : 1000;
   top : 0; left : 0;
+  background : transparent;
 }
 
 div#contentArea img {
-  margin : 10px;
-  float : left;
+  position : absolute;
+  display : block;
 }
 
+/******************* sideMenu **********************/
 div.slideMenu {
   z-index : 9999;
   padding : 5px 0 5px 4px;

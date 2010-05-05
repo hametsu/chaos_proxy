@@ -15,11 +15,12 @@ var MESSAGES = {
 }
 
 var imageTarget = $('#contentArea');
+var imagePool = $('#imagePool');
 
 var context = {
   enableCSSAnimation : false,
-  height : 0,
-  width : 0,
+  screenHeight : 0,
+  screenWidth : 0,
   loadedImages : [],
   lastRetreiveTime : "1171815102" // An enough old time for first time
 } 
@@ -159,6 +160,23 @@ Chaos.effect = {
    */
   pourMessages : function(target, msgArr, callback) {
     // todo 
+  },
+
+  getRandomeXY : function(imageWidth, imageHeight) {
+    var x = Math.floor(Math.random() * (context.screenWidth - imageWidth));
+    var y = Math.floor(Math.random() * (context.screenHeight - imageHeight));
+    return {x : x, y : y} 
+  },
+
+  getImageZIndex : function(width, height) {
+    var size = width + height;
+    return size > 500 ? 100 :
+      size > 400 ? 110 :
+      size > 300 ? 120 :
+      size > 200 ? 130 :
+      size > 100 ? 140 :
+      size > 50  ? 150 :
+      size > 25 ? 160 : 170;
   }
 }
 
@@ -208,7 +226,18 @@ Chaos.setupImageLoader = function() {
     var timer = setInterval(function() {
       var jqObj = $('<img>').attr('src', data[i].uri);
       storeImages(jqObj);
-      imageTarget.prepend(jqObj);
+      jqObj.bind('load', function(a) {
+        var width = a.srcElement.offsetWidth;
+        var height = a.srcElement.offsetHeight;
+        var posXY = Chaos.effect.getRandomeXY(width, height);
+        jqObj.css({
+          'top' : posXY.y,
+          'left' : posXY.x,
+          'zIndex' : Chaos.effect.getImageZIndex(width, height)
+        });
+        imageTarget.append(jqObj);
+      });
+      imagePool.prepend(jqObj);
       if (++i>=len) {
         clearInterval(timer);
         blockLoad = false;
