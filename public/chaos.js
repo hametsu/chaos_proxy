@@ -14,15 +14,12 @@ var MESSAGES = {
   DETECTED_IE : 'Internet explorer cannnot boot this page.'
 }
 
-
-var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
-
 var imageTarget = $('#contentArea');
 
 var context = {
   height : 0,
   width : 0,
-  loadedImagesCount : 0,
+  loadedImages : [],
   lastRetreiveTime : "1171815102" // An enough old time for first time
 } 
 
@@ -168,9 +165,10 @@ Chaos.effect = {
  * Create an image loader
  */
 Chaos.setupImageLoader = function() {
-  var imageLoader = new Chaos.Loader(imageFilter); 
+  var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
   var blockLoad = true;
 
+  var imageLoader = new Chaos.Loader(imageFilter); 
   imageLoader.load(createUri(), manipulateImage);
   setInterval(function() {
     if (!blockLoad) {
@@ -188,14 +186,28 @@ Chaos.setupImageLoader = function() {
     });
   }
 
+  function setLatestImageRetreiveTime(d) {
+    context.lastRetreiveTime = d[0].accessed_at;
+  }
+
+  function storeImages(jqObj) {
+    context.loadedImages.push(jqObj);
+    if (context.loadedImages.length > SETTINGS.MAX_KEEP_IMAGES_COUNT) {
+      console.info('remove!!');
+      context.loadedImages.shift().remove();
+    }
+  }
+
   function manipulateImage(data) {
     blockLoad = true;
-    context.lastRetreiveTime = data[0].accessed_at;
+    setLatestImageRetreiveTime(data);
     data.reverse();
     var len = data.length;
     var i = 0;
     var timer = setInterval(function() {
-      imageTarget.prepend($('<img>').attr('src', data[i].uri));
+      var jqObj = $('<img>').attr('src', data[i].uri);
+      storeImages(jqObj);
+      imageTarget.prepend(jqObj);
       if (++i>=len) {
         clearInterval(timer);
         blockLoad = false;
