@@ -17,7 +17,6 @@ class String
 end
 require 'yaml'
 $settings = YAML.load_file("settings.yaml")
-
 $allowed_hosts = [
   "twitter.com", "search.twitter.com",
   "s.twimg.com", "a0.twimg.com", "a1.twimg.com", "a2.twimg.com", "a3.twimg.com", "widgets.twimg.com",
@@ -44,25 +43,22 @@ def check_twitter(puid)
 end
 
 handler = Proc.new() {|req,res|
-  puts "\n\n"
   path = req.unparsed_uri
-
   puid = "#{req.peeraddr[2]}:#{req.peeraddr[3]}"
-  puts "#{puid.bold}   #{Time.now.to_s.bold}\n"
 
   unless check_twitter(puid)
     unless $allowed_hosts.include?(req.host)
-      puts "#{req.host.red}\n"
+      puts req.host.red
       unless $allowed_ctypes.include?(res.header["content-type"])
         puts "force redirect http://twitter.com/login".bold
         res.status = 302
         res.header["location"] = "http://twitter.com/login"
       end
     else
-      puts "#{req.host.yellow}\n"
+      puts req.host.yellow
     end
   else
-    puts "#{req.host.green}\n"
+    puts req.host.green
   end
 
   case path
@@ -121,8 +117,9 @@ handler = Proc.new() {|req,res|
 s = WEBrick::HTTPProxyServer.new(
   :Port => $settings["proxy"]["port"].to_i,
   :ProxyVia => false,
-  #:ProxyURI => URI.parse('http://localhost:3128/'),
+  :ProxyURI => URI.parse('http://localhost:3128/'),
   :ProxyContentHandler => handler,
+  :AccessLog => [['/dev/null', ''],],
   :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::DEBUG)
 )
 trap('INT') { s.shutdown }
