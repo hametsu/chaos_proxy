@@ -1,153 +1,98 @@
+/************** Global valiables **************/
 var SETTINGS = {
-  MAX_KEEP_IMAGES_COUNT : 200,
-  MAX_RETREIVE_COUNT : 70,
+  MAX_KEEP_IMAGES_COUNT : 100,
+  MAX_RETREIVE_COUNT : 80,
   IMAGE_RETREIVE_INTERVAL : 5000,
+  IMAGE_RETREIVE_INTERVAL_IDOL : 10000,
   FLASH_EFFECT_INTERVAL : 13000,
   MESSAGE_SPEED : 40
 }
 
 var MESSAGES = {
   INIT_SCREEN : 'Initializing a chaos proxy viewer...',
-  INIT_SCREEN_FINISH : '......Done'
+  INIT_SCREEN_FINISH : '......Done',
+  ERROR : 'Error!!',
+  DETECTED_IE : 'Internet explorer cannnot boot this page.',
+  DETECTED_FIREFOX : 'Detected Firefox...',
+  DETECTED_OPERA : 'Detected Opera....',
+  ANIMATION_OFF : 'Animation : OFF'
 }
+
 
 var context = {
-  height : 0,
-  width : 0,
-  loadedImagesCount : 0,
-  lastRetreiveTime : "1171815102", // An enough old time for first time
+  enableCSSAnimation : false,
+  screenHeight : 0,
+  screenWidth : 0,
+  loadedImages : [],
+  lastRetreiveTime : "1171815102" // An enough old time for first time
 } 
 
-var imageTarget = $('#contentArea');
+/**
+ * Name space for functions
+ */
+var Chaos = {};
 
+/**********************************************/
 
-$(function() {
-  initMessageArea(initScreen);
-});
+/**
+ * Effect functions
+ */
+Chaos.effect = {
+  /**
+   *
+   */
+  pourText : function(targetBox, text, callback) {
+    var len = text.length;
+    var i=0;
+    var target = $('<span>');
+    targetBox.append(target).append($('<br />'));
+    var time = setInterval(function() {
+      target.text(text.slice(0, i));
+      if (i++>=len) {
+        clearInterval(time);
+        if (callback) callback();
+      }
+    }, SETTINGS.MESSAGE_SPEED);
+  },
 
-function initScreen() {
-  context.screenHeight = $(window).height();
-  context.screenWidth = $(window).width();
-  $('#initialMask').css({
-    'height' : context.screenHeight,
-    'width' :  context.screenWidth,
-  });
-  $('#dummy').css({
-    'height' : context.screenHeight
-  });
-  $('#contentArea').css({
-    'height' : context.screenHeight,
-    'width' :  context.screenWidth
-  });
-  $('#aboutUsArea').fadeTo(0, 0.7).show();
-  $(document.body).css({
-    'background' : 'url(./back.jpg) 50% 50% #FFF no-repeat'
-  });
-  // Wait for background image load
-  setTimeout(function() {
-    $('#initialMask').fadeTo('slow', 0.01, function() {
-      showMessage($('#message2'), MESSAGES.INIT_SCREEN_FINISH, function() {
-        clearMessageArea();
-        setupImageLoader();
-        flashBackimage();
+  /**
+   *
+   */
+  pourMessages : function(target, msgArr, callback) {
+    (function pourMessage() {
+      Chaos.effect.pourText(target, msgArr.shift(), function() {
+        if (msgArr.length > 0) {
+          pourMessage();
+        } else {
+          if (callback) callback();
+        }
       });
-    });
-  }, 1000);
-}
+    })();
+  },
 
-function flashBackimage() {
-  var mask = $('#initialMask');
-  setInterval(function() {
-    mask.fadeTo('normal', 0.4, function() {
-      mask.fadeTo('slow', 0.01);
-    });
-  }, SETTINGS.FLASH_EFFECT_INTERVAL);
-}
+  getRandomeXY : function(imageWidth, imageHeight) {
+    var x = Math.floor(Math.random() * (context.screenWidth - imageWidth));
+    var y = Math.floor(Math.random() * (context.screenHeight - imageHeight));
+    return {x : x, y : y} 
+  },
 
-function initMessageArea(callback) {
-  $('#messageArea').fadeTo('normal', 0.6, function() {
-    showMessage($('#message1'), MESSAGES.INIT_SCREEN, callback);
-  }).show();
-}
-
-function clearMessageArea() {
-  $('#messageArea').fadeOut(1000);
-}
-
-function showMessage(target, msg, callback) {
-  var len = msg.length;
-  var i=0;
-  var time = setInterval(function() {
-    target.text(msg.slice(0, i));
-    if (i++>=len) {
-      clearInterval(time);
-      callback();
-    }
-  }, SETTINGS.MESSAGE_SPEED);
-}
-
-var blockLoad = false;
-
-function setupImageLoader() {
-  getImages(manipulateImage);
-  setInterval(function() {
-    if (!blockLoad) {
-      getImages(manipulateImage);
-    }
-  }, SETTINGS.IMAGE_RETREIVE_INTERVAL);
-}
-
-function manipulateImage(data) {
-  if (data.length == 0) {return;}
-  blockLoad = true;
-  context.lastRetreiveTime = data[0].accessed_at;
-  var len = data.length;
-  var i = 0;
-  var timer = setInterval(function() {
-    imageTarget.prepend($('<img>').attr('src', data[i].uri));
-    if (++i>=len) {
-      clearInterval(timer);
-      blockLoad = false;
-    }
-  }, 200);
-}
-
-
-function getImages(callback) {
-  if (location.hostname == 'chaos.yuiseki.net') {
-    getImagesFromSameDomain(callback);
-  } else {
-    getImagesFromAnotherDomain(callback);
+  getImageZIndex : function(width, height) {
+    var size = width + height;
+    return size > 600 ? 100 :
+      size > 500 ? 105 :
+      size > 400 ? 110 :
+      size > 300 ? 120 :
+      size > 200 ? 130 :
+      size > 100 ? 140 :
+      size > 50  ? 150 :
+      size > 25 ? 160 : 170;
   }
 }
 
-function getImagesFromSameDomain(callback) {
-  var baseUrl = '/update/';
-  var url = baseUrl + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
-  $.getJSON(url, {}, function(response, status) {
-    callback(response);
-  });
-}
-
-function getImagesFromAnotherDomain(callback) {
-  var baseUrl = 'http://chaos.yuiseki.net/update/';
-  var url = baseUrl + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
-  var xhr = new XMLHttpRequest();
-  xhr.open("GET", url, true);
-  xhr.onreadystatechange = function(){
-    if ( xhr.readyState == 4 ) {
-      if ( xhr.status == 200 ) {
-        var data = JSON.parse(xhr.responseText);
-        callback(data);
-      } else {
-        //console.error('Error #getImageFromAnotherDomain');
-        //console.error(xhr.responseText);
-      }
-    }
-  };
-  xhr.send(null);
-}
-
+/**
+ * For common utilities
+ */
 var lng = {
   emptyFn : function(){}
 }
+
