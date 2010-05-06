@@ -3,4 +3,6 @@ ttserv_img_ctl
 settings.yaml
 db/*
 nohup.out
+*.swp
+.DS_Store
 
