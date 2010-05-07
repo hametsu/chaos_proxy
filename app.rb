@@ -73,13 +73,21 @@ end
 
 
 
-get '/' do
+
+#get '/' do
   # 最新画像URL
-  @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
+  #@elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
+  #erb :index
+#end
+
+
+get '/log' do
+  # for debug
+  old = Time.now.to_i - 60*60*60*10
+  @elements = get_recents(300, 0, old.to_s)
+  #puts @elements.to_json
   erb :index
 end
-
-
 
 
 get '/update/:unixtime' do
@@ -105,7 +113,7 @@ end
 
 
 
-get '/counts/' do
+get '/counts' do
   hashies = rank_by_accsess(3000, 0)
   # 重複する画像URIをカウントしない
   @elements = []

@@ -1,6 +1,9 @@
 tokyotyrant:
   host: "localhost"
   port: 1978
+twitter:
+  host: "localhost"
+  port: 1984
 proxy:
   port: 3000
 app:
