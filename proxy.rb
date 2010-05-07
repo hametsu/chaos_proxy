@@ -21,7 +21,8 @@ $allowed_hosts = [
   "twitter.com", "search.twitter.com",
   "s.twimg.com", "a0.twimg.com", "a1.twimg.com", "a2.twimg.com", "a3.twimg.com", "widgets.twimg.com",
   "www.google.com", "www.google.co.jp", "ajax.googleapis.com",
-  "clients1.google.co.jp", "maps.google.com", "maps.gstatic.com", "www.google-analytics.com"
+  "clients1.google.co.jp", "maps.google.com", "maps.gstatic.com", "www.google-analytics.com",
+  "wiki.github.com"
 ]
 $allowed_ctypes = ["image/jpeg", "image/gif", "image/png", nil]
 
