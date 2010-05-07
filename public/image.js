@@ -12,6 +12,8 @@ Chaos.setupImageLoader = function() {
   var imageLayerSmall  = $('#contentArea div.z3');
   var imagePool = $('#imagePool');
 
+  var animation = new Chaos.animation.DropDown();
+
   var imageLoader = new Chaos.Loader(imageFilter); 
   (function() {
     if (!blockLoad) {
@@ -75,28 +77,105 @@ Chaos.setupImageLoader = function() {
         var height = a.target.offsetHeight;
         var posXY = Chaos.effect.getRandomeXY(width, height);
         var zIndex = Chaos.effect.getImageZIndex(width, height);
-        jqObj.css({
-          'top' : posXY.y,
-          'left' : posXY.x,
-          'zIndex' : zIndex
-        });
-        if (zIndex > 140) {
-          imageLayerSmall.append(jqObj);
-        } else
-        if (zIndex > 110) {
-          imageLayerMiddle.append(jqObj);
-        } else {
-          imageLayerLarge.append(jqObj);
-        }
-        if (!context.enableCSSAnimation) {
-          jqObj.hide().fadeIn('normal');
-        }
+        animation.applyToObject(jqObj, posXY, zIndex);
       });
       if (++i>=len) {
         clearInterval(timer);
         blockLoad = false;
       }
     }, 200);
+  }
+
+
+}
+
+Chaos.animation.DropDown = function(pool, dataArr) {
+  Chaos.animation.DropDown.prototype.initialize.apply(this, [pool, dataArr]);
+}
+
+Chaos.animation.DropDown.prototype = {
+
+  initialize : function(pool, dataArr) {
+    this.dataArr = dataArr;
+    this.pool = pool;
+    var area1 = $('<div>').addClass('dropDownFast');
+    var area2 = $('<div>').addClass('dropDownMiddle');
+    var area3 = $('<div>').addClass('dropDownSlow');
+    $('#contentArea').append(area1);
+    $('#contentArea').append(area2);
+    $('#contentArea').append(area3);
+    this.imageLayerLarge  = area3;
+    this.imageLayerMiddle = area2;
+    this.imageLayerSmall  = area1;
+  },
+
+  destroy : function() {
+    this.imageLayerLarge.remove();
+    this.imageLayerMiddle.remove();
+    this.imageLayerSmall.remove();
+  },
+
+  applyToObject : function(jqObj, xy, zIndex) {
+    jqObj.css({
+      'top' : null,
+      'left' : xy.x,
+      'zIndex' : zIndex
+    });
+    if (zIndex > 140) {
+      this.imageLayerSmall.append(jqObj)
+    } else
+    if (zIndex > 110) {
+      this.imageLayerMiddle.append(jqObj);
+    } else {
+      this.imageLayerLarge.append(jqObj);
+    }
+  }
+}
+
+
+Chaos.animation.Wave = function(pool, dataArr) {
+  Chaos.animation.Wave.prototype.initialize.apply(this, [pool, dataArr]);
+}
+
+Chaos.animation.Wave.prototype = {
+
+  initialize : function(pool, dataArr) {
+    this.dataArr = dataArr;
+    this.pool = pool;
+    var area1 = $('<div>').addClass('z1');
+    var area2 = $('<div>').addClass('z2');
+    var area3 = $('<div>').addClass('z3');
+    $('#contentArea').append(area1);
+    $('#contentArea').append(area2);
+    $('#contentArea').append(area3);
+    this.imageLayerLarge  = area1;
+    this.imageLayerMiddle = area2;
+    this.imageLayerSmall  = area3;
+  },
+
+  destroy : function() {
+    this.imageLayerLarge.remove();
+    this.imageLayerMiddle.remove();
+    this.imageLayerSmall.remove();
+  },
+
+  applyToObject : function(jqObj, xy, zIndex) {
+    jqObj.css({
+      'top' : xy.y,
+      'left' : xy.x,
+      'zIndex' : zIndex
+    });
+    if (zIndex > 140) {
+      this.imageLayerSmall.append(jqObj);
+    } else
+    if (zIndex > 110) {
+      this.imageLayerMiddle.append(jqObj);
+    } else {
+      this.imageLayerLarge.append(jqObj);
+    }
+    if (!context.enableCSSAnimation) {
+      jqObj.hide().fadeIn('normal');
+    }
   }
 }
 
