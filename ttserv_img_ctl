@@ -8,7 +8,7 @@
 # configuration variables
 prog="ttservctl"
 cmd="ttserver"
-basedir="/home/yuiseki/sinatra/chaos/db"
+basedir="/tmp/chaos/db"
 port="1978"
 pidfile="$basedir/img_tt_pid"
 logfile="$basedir/img_tt_log"
