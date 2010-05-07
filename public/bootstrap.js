@@ -68,13 +68,17 @@ Chaos.bootstrap = function() {
       msgs.push(MESSAGES.DETECTED_FIREFOX);
       msgs.push(MESSAGES.ANIMATION_OFF);
     } 
+    if ($.browser.opera) {
+      msgs.push(MESSAGES.DETECTED_OPERA);
+      msgs.push(MESSAGES.ANIMATION_OFF);
+    } 
     msgs.push(MESSAGES.INIT_SCREEN_FINISH);
 
     Chaos.effect.pourMessages(messageBox, msgs, function() {
       clearMessageArea();
       flashBackimage();
       animateBackground();
-      Chaos.setupImageLoader();
+      Chaos.startImageLoader();
     });
   }
 

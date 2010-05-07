@@ -77,22 +77,14 @@ div#contentArea > div {
   position : absolute; top : 0; left : 0; 
 }
 
-@-webkit-keyframes moveImagesZ1 {
-  0% { top : 0px; left : 0px; }
-  50% { top : 0px; left : -7px; }
-  100% { top : 0px; left : 0px; }
-}
 div#contentArea div.z1 {
   z-index : 1001;
-  -webkit-animation-timing-function: ease-in-out;
-  -webkit-animation-iteration-count: infinite;
-  -webkit-animation-name: moveImagesZ1;
-  -webkit-animation-duration: 15s;
 }
 
 @-webkit-keyframes moveImagesZ2 {
   0% { top : 0px; left : 0px; }
-  50% { top : 0px; left : -15px; }
+  33% { top : 0px; left : -10px; }
+  66% { top : 0px; left : 10px; }
   100% { top : 0px; left : 0px; }
 }
 div#contentArea div.z2 {
@@ -105,7 +97,8 @@ div#contentArea div.z2 {
 
 @-webkit-keyframes moveImagesZ3 {
   0% { top : 0px; left : 0px; }
-  50% { top : 0px; left : -35px; }
+  33% { top : 0px; left : -30px; }
+  66% { top : 0px; left : 30px; }
   100% { top : 0px; left : 0px; }
 }
 div#contentArea div.z3 {
@@ -117,7 +110,7 @@ div#contentArea div.z3 {
 }
 
 @-webkit-keyframes dropDownImageFast {
-  0% { top : -10%; -webkit-transform: rotateZ(0deg);}
+  0% { top : -20%; -webkit-transform: rotateZ(0deg);}
   100% { top : 100%; -webkit-transform: rotateZ(360deg);}
 }
 div#contentArea div.dropDownFast {
@@ -128,11 +121,11 @@ div#contentArea div.dropDownFast img{
   -webkit-animation-timing-function: ease-in;
   -webkit-animation-iteration-count: 3;
   -webkit-animation-name: dropDownImageFast;
-  -webkit-animation-duration: 3s;
+  -webkit-animation-duration: 4s;
 }
 
 @-webkit-keyframes dropDownImageMiddle {
-  0% { top : -20%;}
+  0% { top : -40%;}
   100% { top : 100%;}
 }
 div#contentArea div.dropDownMiddle {
@@ -143,11 +136,11 @@ div#contentArea div.dropDownMiddle img{
   -webkit-animation-timing-function: ease-in;
   -webkit-animation-iteration-count: 2;
   -webkit-animation-name: dropDownImageMiddle;
-  -webkit-animation-duration: 5s;
+  -webkit-animation-duration: 6s;
 }
 
 @-webkit-keyframes dropDownImageSlow {
-  0% { top : -50%;}
+  0% { top : -100%;}
   100% { top : 100%;}
 }
 div#contentArea div.dropDownSlow {
@@ -158,7 +151,13 @@ div#contentArea div.dropDownSlow img{
   -webkit-animation-timing-function: ease-in;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-name: dropDownImageSlow;
-  -webkit-animation-duration: 7s;
+  -webkit-animation-duration: 8s;
+}
+
+div#contentArea div.tile img {
+  position : static;
+  margin : 5px;
+  float : left;
 }
 
 @-webkit-keyframes showImg {

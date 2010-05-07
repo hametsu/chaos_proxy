@@ -1,22 +1,22 @@
 /**
  * Create an image loader
  */
-Chaos.setupImageLoader = function() {
+Chaos.startImageLoader = function() {
   var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
 
   var blockLoad = false;
   var idol = false;
+  var count = 0;
+  var animIndex = 0;
 
-  var imageLayerLarge  = $('#contentArea div.z1');
-  var imageLayerMiddle = $('#contentArea div.z2');
-  var imageLayerSmall  = $('#contentArea div.z3');
   var imagePool = $('#imagePool');
+  var currentAnim = getNextAnimation(imagePool);
 
-  var animation = new Chaos.animation.DropDown();
 
   var imageLoader = new Chaos.Loader(imageFilter); 
   (function() {
     if (!blockLoad) {
+      blockLoad = true;
       imageLoader.load(createUri(), renderImages);
     }
     setTimeout(arguments.callee, SETTINGS[idol ? 'IMAGE_RETREIVE_INTERVAL_IDOL' : 'IMAGE_RETREIVE_INTERVAL']);
@@ -36,14 +36,20 @@ Chaos.setupImageLoader = function() {
     context.lastRetreiveTime = d[0].accessed_at;
   }
 
-  function storeImage(jqObj) {
-    context.loadedImages.push(jqObj);
+  function storeImage(jqObj, width, height, zIndex) {
+    context.loadedImages.push({
+      obj : jqObj,
+      width : width,
+      height : height,
+      zIndex : zIndex
+    });
     if (context.loadedImages.length > SETTINGS.MAX_KEEP_IMAGES_COUNT) {
       removeImage(context.loadedImages.shift());
     }
   }
 
-  function removeImage(jqObj) {
+  function removeImage(data) {
+    var jqObj = data.obj;
     if (context.enableCSSAnimation) {
       jqObj.addClass('delete');
       setTimeout(function() {
@@ -59,45 +65,87 @@ Chaos.setupImageLoader = function() {
   function renderImages(data) {
     if (data.length == 0) {
       idol = true;
+      blockLoad = false;
+      count+=2;
+      if (count > 5) {
+        count = 0;
+        changeAnimation();
+      }
       return;
     }
+    count++;
     idol = false;
-    blockLoad = true;
     setLatestImageRetreiveTime(data);
     data.reverse();
     var len = data.length;
     var i = 0;
     var timer = setInterval(function() {
       var jqObj = $('<img>').attr('src', data[i].uri);
-      storeImage(jqObj);
       // Put to the tmp area (invisible) and waiting load the image
       imagePool.prepend(jqObj);
       jqObj.bind('load', function(a) {
         var width = a.target.offsetWidth;
         var height = a.target.offsetHeight;
-        var posXY = Chaos.effect.getRandomeXY(width, height);
+        if (height > 300) {
+          width = Math.floor(width/1.5);
+          height = Math.floor(height/1.5);
+        }
+        jqObj.css({
+          width : width,
+          height : height
+        });
+        var posXY = Chaos.effect.getRandomXY(width, height);
         var zIndex = Chaos.effect.getImageZIndex(width, height);
-        animation.applyToObject(jqObj, posXY, zIndex);
+
+        storeImage(jqObj, width, height, zIndex);
+        currentAnim.applyToElm(jqObj, posXY, zIndex);
       });
       if (++i>=len) {
         clearInterval(timer);
         blockLoad = false;
       }
-    }, 200);
+    }, 300);
   }
 
+  function getNextAnimation() {
+    var anims = [
+      Chaos.animation.Wave,
+      Chaos.animation.Tile
+    ];
+    if (context.enableCSSAnimation) {
+      anims.unshift(Chaos.animation.DropDown);
+    }
+    var next = anims[animIndex++ % anims.length];
+    var result = new next(imagePool);
+    result.setup();
+    return result;
+  }
+
+  function changeAnimation() {
+    blockLoad = true;
+    currentAnim.end22(function() {
+      var next = getNextAnimation();
+      next.applyToAll(function() {
+        blockLoad = false;
+        currentAnim = next;
+      });
+    });
+  }
 
 }
 
 Chaos.animation.DropDown = function(pool, dataArr) {
-  Chaos.animation.DropDown.prototype.initialize.apply(this, [pool, dataArr]);
+  Chaos.animation.DropDown.prototype.initialize.apply(this, [pool]);
 }
 
 Chaos.animation.DropDown.prototype = {
 
-  initialize : function(pool, dataArr) {
-    this.dataArr = dataArr;
+  initialize : function(pool) {
+    this.dataArr = context.loadedImages;
     this.pool = pool;
+  },
+
+  setup : function() {
     var area1 = $('<div>').addClass('dropDownFast');
     var area2 = $('<div>').addClass('dropDownMiddle');
     var area3 = $('<div>').addClass('dropDownSlow');
@@ -109,39 +157,62 @@ Chaos.animation.DropDown.prototype = {
     this.imageLayerSmall  = area1;
   },
 
-  destroy : function() {
+  end22 : function(callback) {
+    var self = this;
+    $.each(this.dataArr, function(idx, d) {
+      self.pool.append(d.obj);
+    });
     this.imageLayerLarge.remove();
     this.imageLayerMiddle.remove();
     this.imageLayerSmall.remove();
+    callback();
   },
 
-  applyToObject : function(jqObj, xy, zIndex) {
+  applyToElm : function(jqObj, xy, zIndex) {
     jqObj.css({
       'top' : null,
       'left' : xy.x,
       'zIndex' : zIndex
     });
-    if (zIndex > 140) {
+    if (zIndex > 150) {
       this.imageLayerSmall.append(jqObj)
     } else
-    if (zIndex > 110) {
+    if (zIndex > 120) {
       this.imageLayerMiddle.append(jqObj);
     } else {
       this.imageLayerLarge.append(jqObj);
     }
+  },
+
+  applyToAll : function(callback) {
+    var i = 0;
+    var len = this.dataArr.length;
+    (function() {
+      var d = this.dataArr[i++];
+      var xy = Chaos.effect.getRandomXY(d.widht, d.height);
+      this.applyToElm(d.obj, xy, d.zIndex); 
+      if (len > i) {
+        setTimeout(lng.bind(arguments.callee, this), 200);
+      } else {
+        callback();
+      }
+    }).apply(this);
   }
 }
 
 
-Chaos.animation.Wave = function(pool, dataArr) {
-  Chaos.animation.Wave.prototype.initialize.apply(this, [pool, dataArr]);
+Chaos.animation.Wave = function(pool) {
+  Chaos.animation.Wave.prototype.initialize.apply(this, [pool]);
 }
 
 Chaos.animation.Wave.prototype = {
 
-  initialize : function(pool, dataArr) {
-    this.dataArr = dataArr;
+  initialize : function(pool) {
+    this.dataArr = context.loadedImages;
     this.pool = pool;
+  },
+
+  setup : function() {
     var area1 = $('<div>').addClass('z1');
     var area2 = $('<div>').addClass('z2');
     var area3 = $('<div>').addClass('z3');
@@ -151,15 +222,27 @@ Chaos.animation.Wave.prototype = {
     this.imageLayerLarge  = area1;
     this.imageLayerMiddle = area2;
     this.imageLayerSmall  = area3;
+    area1.fadeTo(0, 0.8);
   },
 
-  destroy : function() {
-    this.imageLayerLarge.remove();
-    this.imageLayerMiddle.remove();
-    this.imageLayerSmall.remove();
+  end22 : function(callback) {
+    var self = this;
+    self.imageLayerLarge.fadeOut(600, function() {
+      self.imageLayerMiddle.fadeOut(700, function() {
+        self.imageLayerSmall.fadeOut(800, function() {
+          $.each(self.dataArr, function(idx, d) {
+            self.pool.append(d.obj);
+          });
+          self.imageLayerLarge.remove();
+          self.imageLayerMiddle.remove();
+          self.imageLayerSmall.remove();
+          callback();
+        });
+      });
+    });
   },
 
-  applyToObject : function(jqObj, xy, zIndex) {
+  applyToElm : function(jqObj, xy, zIndex) {
     jqObj.css({
       'top' : xy.y,
       'left' : xy.x,
@@ -168,14 +251,95 @@ Chaos.animation.Wave.prototype = {
     if (zIndex > 140) {
       this.imageLayerSmall.append(jqObj);
     } else
-    if (zIndex > 110) {
+    if (zIndex > 120) {
       this.imageLayerMiddle.append(jqObj);
     } else {
       this.imageLayerLarge.append(jqObj);
     }
-    if (!context.enableCSSAnimation) {
+    if (context.enableCSSAnimation) {
+      jqObj.addClass('show');
+    } else {
       jqObj.hide().fadeIn('normal');
     }
+  },
+
+  applyToAll : function(callback) {
+    var i = 0;
+    var len = this.dataArr.length;
+    (function() {
+      var d = this.dataArr[i++];
+      var xy = Chaos.effect.getRandomXY(d.widht, d.height);
+      this.applyToElm(d.obj, xy, d.zIndex); 
+      if (len > i) {
+        setTimeout(lng.bind(arguments.callee, this), 200);
+      } else {
+        callback();
+      }
+    }).apply(this);
+  }
+}
+
+Chaos.animation.Tile = function(pool) {
+  Chaos.animation.Tile.prototype.initialize.apply(this, [pool]);
+}
+
+Chaos.animation.Tile.prototype = {
+
+  initialize : function(pool) {
+    this.dataArr = context.loadedImages;
+    this.pool = pool;
+  },
+
+  setup : function() {
+    var area = $('<div>').addClass('tile');
+    $('#contentArea').append(area);
+    this.imageLayer  = area;
+  },
+
+  end22 : function(callback) {
+    var self = this;
+    $.each(this.dataArr, function(idx, d) {
+      self.pool.append(d.obj);
+    });
+    this.imageLayer.remove();
+    callback();
+  },
+
+  applyToElm : function(jqObj, xy, zIndex) {
+    this.imageLayer.prepend(jqObj);
+//    jqObj.css({
+//      'top' : xy.y,
+//      'left' : xy.x,
+//      'zIndex' : zIndex
+//    });
+//    if (zIndex > 140) {
+//      this.imageLayerSmall.append(jqObj);
+//    } else
+//    if (zIndex > 110) {
+//      this.imageLayerMiddle.append(jqObj);
+//    } else {
+//      this.imageLayerLarge.append(jqObj);
+//    }
+//    if (context.enableCSSAnimation) {
+//      jqObj.addClass('show');
+//    } else {
+//      jqObj.hide().fadeIn('normal');
+//    }
+  },
+
+  applyToAll : function(callback) {
+    var i = 0;
+    var len = this.dataArr.length;
+    (function() {
+      var d = this.dataArr[i++];
+      var xy = Chaos.effect.getRandomXY(d.widht, d.height);
+      this.applyToElm(d.obj, xy, d.zIndex); 
+      if (len > i) {
+        setTimeout(lng.bind(arguments.callee, this), 700);
+      } else {
+        callback();
+      }
+    }).apply(this);
   }
 }
 

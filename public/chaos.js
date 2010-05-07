@@ -1,6 +1,6 @@
 /************** Global valiables **************/
 var SETTINGS = {
-  MAX_KEEP_IMAGES_COUNT : 100,
+  MAX_KEEP_IMAGES_COUNT : 120,
   MAX_RETREIVE_COUNT : 100,
   IMAGE_RETREIVE_INTERVAL : 5000,
   IMAGE_RETREIVE_INTERVAL_IDOL : 10000,
@@ -71,7 +71,7 @@ Chaos.effect = {
     })();
   },
 
-  getRandomeXY : function(imageWidth, imageHeight) {
+  getRandomXY : function(imageWidth, imageHeight) {
     var x = Math.floor(Math.random() * (context.screenWidth - imageWidth));
     var y = Math.floor(Math.random() * (context.screenHeight - imageHeight));
     return {x : x, y : y} 
@@ -79,14 +79,14 @@ Chaos.effect = {
 
   getImageZIndex : function(width, height) {
     var size = width + height;
-    return size > 600 ? 100 :
-      size > 500 ? 105 :
-      size > 400 ? 110 :
-      size > 300 ? 120 :
-      size > 200 ? 130 :
-      size > 100 ? 140 :
-      size > 50  ? 150 :
-      size > 25 ? 160 : 170;
+    return size > 900 ? 100 :
+      size > 800 ? 105 :
+      size > 700 ? 110 :
+      size > 600 ? 120 :
+      size > 500 ? 130 :
+      size > 400 ? 140 :
+      size > 300 ? 150 :
+      size > 200 ? 160 : 170;
   }
 
 
@@ -96,6 +96,12 @@ Chaos.effect = {
  * For common utilities
  */
 var lng = {
-  emptyFn : function(){}
+  emptyFn : function(){},
+
+  bind : function(fn, thisObj) {
+    return function(){
+      fn.apply(thisObj);
+    }
+  }
 }
 
