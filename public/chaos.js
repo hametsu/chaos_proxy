@@ -1,7 +1,7 @@
 /************** Global valiables **************/
 var SETTINGS = {
   MAX_KEEP_IMAGES_COUNT : 100,
-  MAX_RETREIVE_COUNT : 80,
+  MAX_RETREIVE_COUNT : 100,
   IMAGE_RETREIVE_INTERVAL : 5000,
   IMAGE_RETREIVE_INTERVAL_IDOL : 10000,
   FLASH_EFFECT_INTERVAL : 13000,
@@ -30,7 +30,8 @@ var context = {
 /**
  * Name space for functions
  */
-var Chaos = {};
+var Chaos = {}; 
+Chaos.animation = {};
 
 /**********************************************/
 
@@ -87,6 +88,8 @@ Chaos.effect = {
       size > 50  ? 150 :
       size > 25 ? 160 : 170;
   }
+
+
 }
 
 /**

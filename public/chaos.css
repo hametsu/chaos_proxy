@@ -12,6 +12,7 @@ body {
 div#background {
   position : absolute;
   z-index : 0;
+  background : url(http://farm5.static.flickr.com/4039/4586019789_cf022c006c_o.jpg) 50% 50% no-repeat;
 }
 @-webkit-keyframes moveBackGround {
   0% { top : 0px; left : 0px; }
@@ -70,15 +71,19 @@ div#contentArea {
   background : transparent;
 }
 
+div#contentArea > div {
+  background : transparent;
+  width : 100%; height : 100%;
+  position : absolute; top : 0; left : 0; 
+}
+
 @-webkit-keyframes moveImagesZ1 {
   0% { top : 0px; left : 0px; }
   50% { top : 0px; left : -7px; }
   100% { top : 0px; left : 0px; }
 }
 div#contentArea div.z1 {
-  background : transparent;
-  width : 100%; height : 100%;
-  position : absolute; top : 0; left : 0; z-index : 1001;
+  z-index : 1001;
   -webkit-animation-timing-function: ease-in-out;
   -webkit-animation-iteration-count: infinite;
   -webkit-animation-name: moveImagesZ1;
@@ -91,9 +96,7 @@ div#contentArea div.z1 {
   100% { top : 0px; left : 0px; }
 }
 div#contentArea div.z2 {
-  background : transparent;
-  width : 100%; height : 100%;
-  position : absolute; top : 0; left : 0; z-index : 1002;
+  z-index : 1002;
   -webkit-animation-timing-function: ease-in-out;
   -webkit-animation-iteration-count: infinite;
   -webkit-animation-name: moveImagesZ2;
@@ -106,13 +109,56 @@ div#contentArea div.z2 {
   100% { top : 0px; left : 0px; }
 }
 div#contentArea div.z3 {
-  background : transparent;
-  width : 100%; height : 100%;
-  position : absolute; top : 0; left : 0; z-index : 1003;
+  z-index : 1003;
   -webkit-animation-timing-function: ease-in-out;
   -webkit-animation-iteration-count: infinite;
   -webkit-animation-name: moveImagesZ3;
   -webkit-animation-duration: 15s;
+}
+
+@-webkit-keyframes dropDownImageFast {
+  0% { top : -10%; -webkit-transform: rotateZ(0deg);}
+  100% { top : 100%; -webkit-transform: rotateZ(360deg);}
+}
+div#contentArea div.dropDownFast {
+  z-index : 1003;
+}
+div#contentArea div.dropDownFast img{
+  top : 9999px;
+  -webkit-animation-timing-function: ease-in;
+  -webkit-animation-iteration-count: 3;
+  -webkit-animation-name: dropDownImageFast;
+  -webkit-animation-duration: 3s;
+}
+
+@-webkit-keyframes dropDownImageMiddle {
+  0% { top : -20%;}
+  100% { top : 100%;}
+}
+div#contentArea div.dropDownMiddle {
+  z-index : 1002;
+}
+div#contentArea div.dropDownMiddle img{
+  top : 9999px;
+  -webkit-animation-timing-function: ease-in;
+  -webkit-animation-iteration-count: 2;
+  -webkit-animation-name: dropDownImageMiddle;
+  -webkit-animation-duration: 5s;
+}
+
+@-webkit-keyframes dropDownImageSlow {
+  0% { top : -50%;}
+  100% { top : 100%;}
+}
+div#contentArea div.dropDownSlow {
+  z-index : 1001;
+}
+div#contentArea div.dropDownSlow img{
+  top : 9999px;
+  -webkit-animation-timing-function: ease-in;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-name: dropDownImageSlow;
+  -webkit-animation-duration: 7s;
 }
 
 @-webkit-keyframes showImg {
@@ -128,8 +174,10 @@ div#contentArea img {
   display : block;
   -webkit-animation-timing-function: ease-in;
   -webkit-animation-iteration-count: 1;
-  -webkit-animation-name: showImg;
   -webkit-animation-duration: 1s;
+}
+div#contentArea img.show {
+  -webkit-animation-name: showImg;
 }
 div#contentArea img.delete {
   -webkit-animation-name: deleteImg;

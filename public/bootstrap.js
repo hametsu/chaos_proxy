@@ -24,8 +24,7 @@ Chaos.bootstrap = function() {
     });
     $('#background').css({
       'height' : context.screenHeight + 50,
-      'width' :  context.screenWidth + 50,
-      'background' : 'url(./back.jpg) 50% 50% #FFF repeat'
+      'width' :  context.screenWidth + 50
     });
     $('#contentArea').css({
       'height' : context.screenHeight,
