@@ -165,9 +165,9 @@ Chaos.animation.DropDown.prototype = {
       $.each(self.dataArr, function(idx, d) {
         self.pool.append(d.obj);
       });
-      this.imageLayerLarge.remove();
-      this.imageLayerMiddle.remove();
-      this.imageLayerSmall.remove();
+      self.imageLayerLarge.remove();
+      self.imageLayerMiddle.remove();
+      self.imageLayerSmall.remove();
       callback();
     }
   },
