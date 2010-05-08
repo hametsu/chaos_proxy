@@ -153,19 +153,23 @@ Chaos.animation.DropDown.prototype = {
   },
 
   setup : function() {
+    var area0 = $('<div>').addClass('dropDownFast2');
     var area1 = $('<div>').addClass('dropDownFast');
     var area2 = $('<div>').addClass('dropDownMiddle');
     var area3 = $('<div>').addClass('dropDownSlow');
+    $('#contentArea').append(area0);
     $('#contentArea').append(area1);
     $('#contentArea').append(area2);
     $('#contentArea').append(area3);
     this.imageLayerLarge  = area3;
     this.imageLayerMiddle = area2;
     this.imageLayerSmall  = area1;
+    this.imageLayerVerySmall  = area0;
   },
 
   end22 : function(callback) {
     var self = this;
+    this.imageLayerVerySmall.fadeOut('slow');
     this.imageLayerSmall.fadeOut('slow', onsuccess);
 
     function onsuccess() {
@@ -175,9 +179,12 @@ Chaos.animation.DropDown.prototype = {
       self.imageLayerLarge.remove();
       self.imageLayerMiddle.remove();
       self.imageLayerSmall.remove();
+      self.imageLayerVerySmall.remove();
       callback();
     }
   },
+
+  applyCount : 0,
 
   applyToElm : function(jqObj, xy, zIndex) {
     jqObj.css({
@@ -186,7 +193,11 @@ Chaos.animation.DropDown.prototype = {
       'zIndex' : zIndex
     });
     if (zIndex > 150) {
-      this.imageLayerSmall.append(jqObj)
+      if (this.applyCount++%3 == 0) {
+        this.imageLayerVerySmall.append(jqObj)
+      } else {
+        this.imageLayerSmall.append(jqObj)
+      }
     } else
     if (zIndex > 120) {
       this.imageLayerMiddle.append(jqObj);

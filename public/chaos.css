@@ -109,6 +109,21 @@ div#contentArea div.z3 {
   -webkit-animation-duration: 15s;
 }
 
+@-webkit-keyframes dropDownImageFast2 {
+  0% { top : -30%; -webkit-transform: rotateX(0deg);}
+  100% { top : 100%; -webkit-transform: rotateX(360deg);}
+}
+div#contentArea div.dropDownFast2 {
+  z-index : 1003;
+}
+div#contentArea div.dropDownFast2 img{
+  top : 9999px;
+  -webkit-animation-timing-function: ease-in;
+  -webkit-animation-iteration-count: 3;
+  -webkit-animation-name: dropDownImageFast2;
+  -webkit-animation-duration: 4s;
+}
+
 @-webkit-keyframes dropDownImageFast {
   0% { top : -20%; -webkit-transform: rotateZ(0deg);}
   100% { top : 100%; -webkit-transform: rotateZ(360deg);}
@@ -136,7 +151,7 @@ div#contentArea div.dropDownMiddle img{
   -webkit-animation-timing-function: ease-in;
   -webkit-animation-iteration-count: 2;
   -webkit-animation-name: dropDownImageMiddle;
-  -webkit-animation-duration: 6s;
+  -webkit-animation-duration: 8s;
 }
 
 @-webkit-keyframes dropDownImageSlow {
@@ -151,8 +166,9 @@ div#contentArea div.dropDownSlow img{
   -webkit-animation-timing-function: ease-in;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-name: dropDownImageSlow;
-  -webkit-animation-duration: 8s;
+  -webkit-animation-duration: 10s;
 }
+
 
 div#contentArea div.tile img {
   position : static;
@@ -164,12 +180,12 @@ div#contentArea div.tile img {
   0% { 
     top : 0px;
     left : 0px; 
-    -webkit-transform: rotateZ(0deg);
+    -webkit-transform: rotateZ(0deg); 
     opacity : 1;
   }
   100% { 
     top : 70%; 
-    left : 70%px; 
+    left : 70%; 
     -webkit-transform: rotateZ(360deg); 
     opacity : 0;
   }
