@@ -5,7 +5,8 @@ var SETTINGS = {
   IMAGE_RETREIVE_INTERVAL : 5000,
   IMAGE_RETREIVE_INTERVAL_IDOL : 10000,
   FLASH_EFFECT_INTERVAL : 13000,
-  MESSAGE_SPEED : 40
+  MESSAGE_SPEED : 40,
+  MAX_IMAGE_SIZE : 1300 
 }
 
 var MESSAGES = {
@@ -24,6 +25,7 @@ var context = {
   screenHeight : 0,
   screenWidth : 0,
   loadedImages : [],
+  textdata : [],
   lastRetreiveTime : "1171815102" // An enough old time for first time
 } 
 

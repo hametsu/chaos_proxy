@@ -9,7 +9,15 @@ Chaos.bootstrap = function() {
 
   var messageBox = $('#bootMessageArea');
 
+  initSettings();
   initMessageArea(initScreen);
+
+  function initSettings() {
+    var maxsize = location.href.match(/maxsize=([0-9]+)/);
+    if (maxsize) {
+      SETTINGS.MAX_IMAGE_SIZE=maxsize[1];
+    }
+  }
 
   function initScreen() {
     context.enableCSSAnimation = $.browser.safari;

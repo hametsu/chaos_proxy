@@ -80,25 +80,32 @@ Chaos.startImageLoader = function() {
     var len = data.length;
     var i = 0;
     var timer = setInterval(function() {
-      var jqObj = $('<img>').attr('src', data[i].uri);
+
+      var url = data[i].uri;
+      if (url.match(/media.tumblr.com/)) {
+        url = url.replace(/(http.*)(500|400)(.jpg|.png)$/, '$1250$3');
+      }
+
+      var jqObj = $('<img>').attr('src', url);
+      context.textdata.push(url);
       // Put to the tmp area (invisible) and waiting load the image
       imagePool.prepend(jqObj);
       jqObj.bind('load', function(a) {
         var width = a.target.offsetWidth;
         var height = a.target.offsetHeight;
-        if (height > 300) {
-          width = Math.floor(width/1.5);
-          height = Math.floor(height/1.5);
-        }
-        jqObj.css({
-          width : width,
-          height : height
-        });
-        var posXY = Chaos.effect.getRandomXY(width, height);
-        var zIndex = Chaos.effect.getImageZIndex(width, height);
+        if (height + width > SETTINGS.MAX_IMAGE_SIZE) {
+          jqObj.remove();
+        } else {
+          jqObj.css({ 
+            width : width, 
+            height : height
+          });
+          var posXY = Chaos.effect.getRandomXY(width, height);
+          var zIndex = Chaos.effect.getImageZIndex(width, height);
 
-        storeImage(jqObj, width, height, zIndex);
-        currentAnim.applyToElm(jqObj, posXY, zIndex);
+          storeImage(jqObj, width, height, zIndex);
+          currentAnim.applyToElm(jqObj, posXY, zIndex);
+        }
       });
       if (++i>=len) {
         clearInterval(timer);
