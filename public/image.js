@@ -159,7 +159,7 @@ Chaos.animation.DropDown.prototype = {
 
   end22 : function(callback) {
     var self = this;
-    this.imageLayerFast.fadeOut('slow', onsuccess);
+    this.imageLayerSmall.fadeOut('slow', onsuccess);
 
     function onsuccess() {
       $.each(self.dataArr, function(idx, d) {
