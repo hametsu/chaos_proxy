@@ -159,13 +159,17 @@ Chaos.animation.DropDown.prototype = {
 
   end22 : function(callback) {
     var self = this;
-    $.each(this.dataArr, function(idx, d) {
-      self.pool.append(d.obj);
-    });
-    this.imageLayerLarge.remove();
-    this.imageLayerMiddle.remove();
-    this.imageLayerSmall.remove();
-    callback();
+    this.imageLayerFast.fadeOut('slow', onsuccess);
+
+    function onsuccess() {
+      $.each(self.dataArr, function(idx, d) {
+        self.pool.append(d.obj);
+      });
+      this.imageLayerLarge.remove();
+      this.imageLayerMiddle.remove();
+      this.imageLayerSmall.remove();
+      callback();
+    }
   },
 
   applyToElm : function(jqObj, xy, zIndex) {
@@ -189,10 +193,10 @@ Chaos.animation.DropDown.prototype = {
     var len = this.dataArr.length;
     (function() {
       var d = this.dataArr[i++];
-      var xy = Chaos.effect.getRandomXY(d.widht, d.height);
+      var xy = Chaos.effect.getRandomXY(d.width, d.height);
       this.applyToElm(d.obj, xy, d.zIndex); 
       if (len > i) {
-        setTimeout(lng.bind(arguments.callee, this), 200);
+        setTimeout(lng.bind(arguments.callee, this), 300);
       } else {
         callback();
       }
@@ -268,7 +272,7 @@ Chaos.animation.Wave.prototype = {
     var len = this.dataArr.length;
     (function() {
       var d = this.dataArr[i++];
-      var xy = Chaos.effect.getRandomXY(d.widht, d.height);
+      var xy = Chaos.effect.getRandomXY(d.width, d.height);
       this.applyToElm(d.obj, xy, d.zIndex); 
       if (len > i) {
         setTimeout(lng.bind(arguments.callee, this), 200);
@@ -298,33 +302,24 @@ Chaos.animation.Tile.prototype = {
 
   end22 : function(callback) {
     var self = this;
-    $.each(this.dataArr, function(idx, d) {
-      self.pool.append(d.obj);
-    });
-    this.imageLayer.remove();
-    callback();
+    if (context.enableCSSAnimation) {
+      this.imageLayer.addClass('endTile');
+      setTimeout(onsuccess, 3000);
+    } else {
+      this.imageLayer.fadeOut('normal', onsuccess);
+    }
+
+    function onsuccess() {
+      $.each(self.dataArr, function(idx, d) {
+        self.pool.append(d.obj);
+      });
+      self.imageLayer.remove();
+      callback();
+    }
   },
 
   applyToElm : function(jqObj, xy, zIndex) {
     this.imageLayer.prepend(jqObj);
-//    jqObj.css({
-//      'top' : xy.y,
-//      'left' : xy.x,
-//      'zIndex' : zIndex
-//    });
-//    if (zIndex > 140) {
-//      this.imageLayerSmall.append(jqObj);
-//    } else
-//    if (zIndex > 110) {
-//      this.imageLayerMiddle.append(jqObj);
-//    } else {
-//      this.imageLayerLarge.append(jqObj);
-//    }
-//    if (context.enableCSSAnimation) {
-//      jqObj.addClass('show');
-//    } else {
-//      jqObj.hide().fadeIn('normal');
-//    }
   },
 
   applyToAll : function(callback) {
@@ -332,10 +327,10 @@ Chaos.animation.Tile.prototype = {
     var len = this.dataArr.length;
     (function() {
       var d = this.dataArr[i++];
-      var xy = Chaos.effect.getRandomXY(d.widht, d.height);
+      var xy = Chaos.effect.getRandomXY(d.width, d.height);
       this.applyToElm(d.obj, xy, d.zIndex); 
       if (len > i) {
-        setTimeout(lng.bind(arguments.callee, this), 700);
+        setTimeout(lng.bind(arguments.callee, this), 500);
       } else {
         callback();
       }

@@ -160,6 +160,28 @@ div#contentArea div.tile img {
   float : left;
 }
 
+@-webkit-keyframes endTile {
+  0% { 
+    top : 0px;
+    left : 0px; 
+    -webkit-transform: rotateZ(0deg);
+    opacity : 1;
+  }
+  100% { 
+    top : 70%; 
+    left : 70%px; 
+    -webkit-transform: rotateZ(360deg); 
+    opacity : 0;
+  }
+}
+
+div#contentArea div.endTile {
+  -webkit-animation-timing-function: ease-in;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-name: endTile;
+  -webkit-animation-duration: 3s;
+}
+
 @-webkit-keyframes showImg {
   0% { opacity : 0}
   100% { opacity : 1 }
