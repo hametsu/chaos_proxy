@@ -85,6 +85,9 @@ Chaos.startImageLoader = function() {
       if (url.match(/media.tumblr.com/)) {
         url = url.replace(/(http.*)(500|400)(.jpg|.png)$/, '$1250$3');
       }
+      if (url.match(/data.tumblr.com/)) {
+        url = url.replace(/(http.*)(1280)(.jpg|.png)(\?AWSAccessKeyId.*)$/, '$1400$3');
+      }
 
       var jqObj = $('<img>').attr('src', url);
       context.textdata.push(url);
