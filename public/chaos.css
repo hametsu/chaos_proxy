@@ -119,7 +119,7 @@ div#contentArea div.dropDownFast2 {
 div#contentArea div.dropDownFast2 img{
   top : 9999px;
   -webkit-animation-timing-function: ease-in;
-  -webkit-animation-iteration-count: 3;
+  -webkit-animation-iteration-count: 2;
   -webkit-animation-name: dropDownImageFast2;
   -webkit-animation-duration: 4s;
 }
@@ -134,7 +134,7 @@ div#contentArea div.dropDownFast {
 div#contentArea div.dropDownFast img{
   top : 9999px;
   -webkit-animation-timing-function: ease-in;
-  -webkit-animation-iteration-count: 3;
+  -webkit-animation-iteration-count: 2;
   -webkit-animation-name: dropDownImageFast;
   -webkit-animation-duration: 4s;
 }
@@ -170,10 +170,19 @@ div#contentArea div.dropDownSlow img{
 }
 
 
+@-webkit-keyframes tileshow {
+  0% { -webkit-transform: rotateY(0deg);}
+  100% { -webkit-transform: rotateY(360deg);}
+}
+
 div#contentArea div.tile img {
   position : static;
   margin : 5px;
   float : left;
+  -webkit-animation-timing-function: ease-out;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-name: tileshow;
+  -webkit-animation-duration: 0.3s;
 }
 
 @-webkit-keyframes endTile {
