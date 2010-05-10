@@ -42,8 +42,8 @@ def auth_twitter(puid)
   end
 end
 
-def regist_twitter(puid, twitter_name)
-  value = {'puid' => puid.to_s, 'twitter_name' => twitter_name.to_s, 'accessed_at' => Time.now.to_i.to_s }
+def regist_twitter(puid, twitter_name, user_icon)
+  value = {'puid' => puid.to_s, 'twitter_name' => twitter_name.to_s, 'user_icon' => user_icon.to_s, 'accessed_at' => Time.now.to_i.to_s }
   rdb = RDBTBL::new
   rdb.open($settings["twitter"]["host"].to_s, $settings["twitter"]["port"].to_i)
   key = rdb.rnum + 1
@@ -54,8 +54,15 @@ end
 handler = Proc.new() {|req,res|
   puts ''
   path = req.unparsed_uri
-  puid = "#{req.peeraddr[2]}:#{req.peeraddr[3]}"
-  puts req.header['x-forwarded-for']
+  puid = "#{req.peeraddr[2]}:#{req.peeraddr[3]}:#{req.header['x-forwarded-for']}"
+  puts Time.now.to_s
+
+  # 特定のホストからのアクセスかどうかをチェック（会場内だったらtrue）
+  # jsではstring 型の真偽は1文字以上あれば true、0文字の場合は false。（文字列"0"も true）
+  #local_access = ''
+  #if req.peeraddr[2] == 'pl440.nas93g.p-tokyo.nttpc.ne.jp'
+  #  local_access = '1'
+  #end
 
   unless twitter_name = auth_twitter(puid)
     unless $allowed_hosts.include?(req.host)
@@ -66,24 +73,24 @@ handler = Proc.new() {|req,res|
         res.header["location"] = "http://twitter.com/login"
       end
     else
-      puts "#{puid} as #{'anonymous '.red} at #{req.host.yellow}"
+      puts "#{puid} as #{'anonymous '.red} at #{req.host.yellow.on_black}"
     end
   else
-    puts "#{puid} as #{twitter_name.red.bold} at #{req.host.green}"
+    puts "#{puid} as #{twitter_name.magenta.bold.on_blue} at #{req.host.green.on_black}"
   end
 
 
-  if bauth = req.header.fetch('authorization', false) and req.host == 'twitter.com'
-    puts "twitter basic auth"
-    # twitter.comへのbasic認証だったらぶっこぬき
-    auth = bauth.split(/\s/)
-    puts auth.inspect
-  end
+  #if bauth = req.header.fetch('authorization', false) and req.host == 'twitter.com'
+  #  puts "twitter basic auth"
+  #  twitter.comへのbasic認証だったらぶっこぬき
+  #  auth = bauth.split(/\s/)
+  #  puts auth.inspect
+  #end
 
 
   case path
   when /^http:\/\/twitter\.com\/$/
-    # twitterへのアクセスだったらpuidとtwitter_nameを紐付け
+    # twitterへのアクセスだったら
     body = res.body
     if res.header["content-encoding"] == "gzip"
       Zlib::GzipReader.wrap(StringIO.new(res.body)){|gz| body = gz.read}
@@ -93,14 +100,25 @@ handler = Proc.new() {|req,res|
     utf_body = body.toutf8
     #utf_body.gsub!(/。/, 'にょ。')
     doc = Hpricot(utf_body)
+
+    # twitter_nameとuser_iconを特定
     span_me_name = doc.search('span#me_name')
+    div_user_icon = doc.search('img.side_thumb')
     if span_me_name
       twitter_name = span_me_name.inner_html
+
+      user_icon = ''
+      user_icon = div_user_icon.first.attributes['src'] if div_user_icon
+
       unless twitter_name == ""
+        # puidと、twitter_nameとimageを紐付け
         puts "regist #{puid} as #{twitter_name.red.bold}"
-        regist_twitter(puid, twitter_name)
+        puts "profile image is #{user_icon}"
+        regist_twitter(puid, twitter_name, user_icon)
       end
     end
+
+    # レスポンスのファイナライズ
     code = Kconv.guess(body)
     res.body = utf_body.kconv(code, Kconv::UTF8)
 
