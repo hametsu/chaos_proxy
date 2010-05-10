@@ -103,12 +103,12 @@ handler = Proc.new() {|req,res|
 
     # twitter_nameとuser_iconを特定
     span_me_name = doc.search('span#me_name')
-    div_user_icon = doc.search('img.side_thumb')
+    div_user_icon = doc.search('img.side_thumb').first
     if span_me_name
       twitter_name = span_me_name.inner_html
 
       user_icon = ''
-      user_icon = div_user_icon.first.attributes['src'] if div_user_icon
+      user_icon = div_user_icon.attributes['src'] if div_user_icon
 
       unless twitter_name == ""
         # puidと、twitter_nameとimageを紐付け
@@ -131,25 +131,27 @@ handler = Proc.new() {|req,res|
     end
 
   when /\.(jpg|gif|png)/
-    # 画像だったらTTへ保存
-    rdb = RDBTBL::new
-    rdb.open($settings["tokyotyrant"]["host"].to_s, $settings["tokyotyrant"]["port"].to_i)
-    qry = RDBQRY::new(rdb)
-    qry.addcond("uri", RDBQRY::QCSTREQ, path)
-    hit = qry.searchget
-    if hit.size == 0
-      # 初回投入
-      value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "count"=>"1", "puid" =>puid}
-      key = rdb.rnum + 1
-      rdb.put(key, value)
-    else
-      # 既出のURL。カウントアップ
-      count = hit.last.fetch("count", "1").to_i+1
-      value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "count"=>count.to_s, "puid"=>puid}
-      key = rdb.rnum + 1
-      rdb.put(key, value)
+    if req.header.has_key?('authorization') or req.header.has_key?('Authorization')
+      # 画像だったらTTへ保存
+      rdb = RDBTBL::new
+      rdb.open($settings["tokyotyrant"]["host"].to_s, $settings["tokyotyrant"]["port"].to_i)
+      qry = RDBQRY::new(rdb)
+      qry.addcond("uri", RDBQRY::QCSTREQ, path)
+      hit = qry.searchget
+      if hit.size == 0
+        # 初回投入
+        value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "count"=>"1", "puid" =>puid}
+        key = rdb.rnum + 1
+        rdb.put(key, value)
+      else
+        # 既出のURL。カウントアップ
+        count = hit.last.fetch("count", "1").to_i+1
+        value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "count"=>count.to_s, "puid"=>puid}
+        key = rdb.rnum + 1
+        rdb.put(key, value)
+      end
+      rdb.close
     end
-    rdb.close
   end
   foo = File.open("tmp/proxy.log", 'a')
   foo.puts "resquest headers : "

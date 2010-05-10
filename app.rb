@@ -54,7 +54,7 @@ helpers do
     # 最近6時間以内限定にする？
     #unixtime = 
     #qry.addcond("accessed_at", RDBQRY::QCNUMGT, unixtime.to_s)
-    qry.setlimit('100')
+    qry.setlimit('500')
     users = qry.searchget
     # 重複を防ぐための配列
     twitter_name = []
