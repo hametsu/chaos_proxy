@@ -131,7 +131,7 @@ handler = Proc.new() {|req,res|
     end
 
   when /\.(jpg|gif|png)/
-    if req.header.has_key?('authorization') or req.header.has_key?('Authorization')
+    unless req.header.has_key?('authorization') or req.header.has_key?('Authorization')
       # 画像だったらTTへ保存
       rdb = RDBTBL::new
       rdb.open($settings["tokyotyrant"]["host"].to_s, $settings["tokyotyrant"]["port"].to_i)
