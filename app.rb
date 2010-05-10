@@ -153,6 +153,12 @@ get '/update/:unixtime' do
   return @elements.to_json
 end
 
+get '/users.json' do
+  # 最近アクセスしたユーザー一覧
+  @elements = get_users()
+  return @elements.to_json
+end
+
 get '/users' do
   # 最近アクセスしたユーザー一覧
   @elements = get_users()
