@@ -6,7 +6,7 @@ Chaos.startImageLoader = function() {
 
   var blockLoad = false;
   var idol = false;
-  var count = 0;
+  var idolCount = 0;
   var animIndex = 0;
 
   var imagePool = $('#imagePool');
@@ -19,7 +19,7 @@ Chaos.startImageLoader = function() {
       blockLoad = true;
       imageLoader.load(createUri(), renderImages);
     }
-    setTimeout(arguments.callee, SETTINGS[idol ? 'IMAGE_RETREIVE_INTERVAL_IDOL' : 'IMAGE_RETREIVE_INTERVAL']);
+    setTimeout(arguments.callee, SETTINGS.IMAGE_RETREIVE_INTERVAL);
   })();
 
   function createUri() {
@@ -64,17 +64,15 @@ Chaos.startImageLoader = function() {
 
   function renderImages(data) {
     if (data.length == 0) {
-      idol = true;
       blockLoad = false;
-      count+=2;
-      if (count > 5) {
-        count = 0;
+      idolCount+=2;
+      if (idolCount > 5) {
+        idolCount = 0;
         changeAnimation();
       }
       return;
     }
-    count++;
-    idol = false;
+    idolCount = 0;
     setLatestImageRetreiveTime(data);
     data.reverse();
     var len = data.length;
@@ -116,6 +114,9 @@ Chaos.startImageLoader = function() {
       if (++i>=len) {
         clearInterval(timer);
         blockLoad = false;
+        if (currentAnim.roopCount++ > currentAnim.roopLimit) {
+          changeAnimation();
+        }
       }
     }, 300);
   }
@@ -157,6 +158,9 @@ Chaos.animation.DropDown.prototype = {
     this.dataArr = context.loadedImages;
     this.pool = pool;
   },
+
+  roopCount : 0,
+  roopLimit : 12,
 
   setup : function() {
     var area0 = $('<div>').addClass('dropDownFast2');
@@ -240,6 +244,9 @@ Chaos.animation.Wave.prototype = {
     this.pool = pool;
   },
 
+  roopCount : 0,
+  roopLimit : 4,
+
   setup : function() {
     var area1 = $('<div>').addClass('z1');
     var area2 = $('<div>').addClass('z2');
@@ -318,6 +325,9 @@ Chaos.animation.Tile.prototype = {
     this.pool = pool;
   },
 
+  roopCount : 0,
+  roopLimit : 2,
+
   setup : function() {
     var area = $('<div>').addClass('tile');
     $('#contentArea').append(area);
@@ -342,7 +352,7 @@ Chaos.animation.Tile.prototype = {
     }
   },
 
-  applyToElm : function(jqObj, xy, zIndex) {
+  applyToElm : function(jqObj) {
     this.imageLayer.prepend(jqObj);
   },
 
@@ -351,10 +361,9 @@ Chaos.animation.Tile.prototype = {
     var len = this.dataArr.length;
     (function() {
       var d = this.dataArr[i++];
-      var xy = Chaos.effect.getRandomXY(d.width, d.height);
-      this.applyToElm(d.obj, xy, d.zIndex); 
+      this.applyToElm(d.obj); 
       if (len > i) {
-        setTimeout(lng.bind(arguments.callee, this), 500);
+        setTimeout(lng.bind(arguments.callee, this), 300);
       } else {
         callback();
       }
