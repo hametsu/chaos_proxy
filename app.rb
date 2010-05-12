@@ -156,6 +156,7 @@ end
 
 get '/users.json' do
   # 最近アクセスしたユーザー一覧
+  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = get_users()
   return @elements.to_json
 end
@@ -176,18 +177,21 @@ end
 
 get '/user/:name' do
   # twitterユーザー名でアクセス画像絞り込み表示
+  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = recents_by_name(params[:name])
   erb :list
 end
 
 get '/whois/:puid' do
   # puidの詳細情報を表示
+  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = get_by_puid(params[:puid])
   return @elements.to_json
 end
 
 get '/icon/:puid' do
   # puidからtwitterアイコンへのリダイレクト
+  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = get_by_puid(params[:puid])
   user_icon = @elements.fetch('user_icon', 'http://s.twimg.com/a/1273278095/images/default_profile_4_normal.png')
   redirect user_icon
