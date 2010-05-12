@@ -17,6 +17,7 @@ require 'digest/md5'
 
 configure do
   set :settings, YAML.load_file("settings.yaml")
+  set :places, {'nanzuka' => 'pl440.nas93g.p-tokyo.nttpc.ne.jp', }
 end
 
 
@@ -164,6 +165,14 @@ get '/users' do
   @elements = get_users()
   erb :users
 end
+
+
+get '/onthe/:place' do
+end
+
+
+
+
 
 get '/user/:name' do
   # twitterユーザー名でアクセス画像絞り込み表示
