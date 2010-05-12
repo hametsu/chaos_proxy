@@ -6,7 +6,7 @@
   <div class="user" style="">
     <a href="/user/<%= v['twitter_name'] %>"><img src='<%= v['user_icon'] %>' width="48" height="48" /></a>
     <%= Time.at(v['accessed_at'].to_i).strftime('%m/%d %H:%M:%S') %>
-    <span title="<%= v['puid'] %>"><%= v['twitter_name'] %></span>
+    <span title="<%= v['puid'] %>"><a href="http://twitter.com/<%= v['twitter_name'] %>"><%= v['twitter_name'] %></a></span>
   </div>
 <% end %>
 </div>
