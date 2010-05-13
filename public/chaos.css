@@ -229,6 +229,72 @@ div#contentArea img.delete {
   -webkit-animation-name: deleteImg;
 }
 
+div#contentArea div.userListTitle {
+  z-index:2000;
+  width : 60%;
+  height : 32px;
+  font-size: 20px;
+  color : #FFF;
+  padding : 7px;
+  background-color:#333;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  top : 2%;
+  left : 10%;
+}
+
+div#contentArea div.userList {
+  z-index:2000;
+  background-color:#333;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  width : 80%;
+  height : 80%;
+  margin:0 auto;
+  overflow : hidden;
+  top : 10%;
+  left : 10%;
+}
+
+@-webkit-keyframes scrollUserList {
+  0% { top : 0%; opacity : 0;}
+  5% { top : -9%; opacity : 1;}
+  100% { top : -170%; opacity : 1;}
+}
+div.userList table {
+  position : absolute;
+  top : -100%;
+  margin : 30px;
+  color : #FFF;
+  -webkit-animation-name: scrollUserList;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-duration: 10s;
+}
+div.userList td.user_icon {
+  padding-right : 10px;
+  padding-bottom : 10px;
+}
+div.userList td.user_icon > div {
+  width : 100px;
+  height : 100px;
+  overflow : hidden;
+}
+div.userList td.user_icon img {
+  position : static !important;
+  width : 100px;
+}
+div.userList td.puid {
+  padding : 5px;
+  font-size:30px;
+  overflow : hidden;
+}
+div.userList td.puid span {
+  /*display:block;*/
+}
+
 
 /******************* sideMenu **********************/
 div.slideMenu {

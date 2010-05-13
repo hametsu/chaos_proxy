@@ -87,6 +87,7 @@ Chaos.bootstrap = function() {
       flashBackimage();
       animateBackground();
       Chaos.startImageLoader();
+      Chaos.startUserList();
     });
   }
 
