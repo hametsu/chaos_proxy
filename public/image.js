@@ -160,7 +160,7 @@ Chaos.animation.DropDown.prototype = {
   },
 
   roopCount : 0,
-  roopLimit : 12,
+  roopLimit : 14,
 
   setup : function() {
     var area0 = $('<div>').addClass('dropDownFast2');
@@ -179,17 +179,14 @@ Chaos.animation.DropDown.prototype = {
 
   end22 : function(callback) {
     var self = this;
-    this.imageLayerVerySmall.fadeOut('slow');
-    this.imageLayerSmall.fadeOut('slow', onsuccess);
+    $('#contentArea').fadeOut('slow', onsuccess);
 
     function onsuccess() {
       $.each(self.dataArr, function(idx, d) {
         self.pool.append(d.obj);
       });
-      self.imageLayerLarge.remove();
-      self.imageLayerMiddle.remove();
-      self.imageLayerSmall.remove();
-      self.imageLayerVerySmall.remove();
+      $('#contentArea > div').remove();
+      $('#contentArea').show();
       callback();
     }
   },

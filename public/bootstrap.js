@@ -86,8 +86,8 @@ Chaos.bootstrap = function() {
       clearMessageArea();
       flashBackimage();
       animateBackground();
-      Chaos.startImageLoader();
       Chaos.startUserList();
+      setTimeout(Chaos.startImageLoader, 3000);
     });
   }
 

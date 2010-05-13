@@ -140,7 +140,7 @@ div#contentArea div.dropDownFast img{
 }
 
 @-webkit-keyframes dropDownImageMiddle {
-  0% { top : -40%;}
+  0% { top : -60%;}
   100% { top : 100%;}
 }
 div#contentArea div.dropDownMiddle {
@@ -151,7 +151,7 @@ div#contentArea div.dropDownMiddle img{
   -webkit-animation-timing-function: ease-in;
   -webkit-animation-iteration-count: 2;
   -webkit-animation-name: dropDownImageMiddle;
-  -webkit-animation-duration: 8s;
+  -webkit-animation-duration: 10s;
 }
 
 @-webkit-keyframes dropDownImageSlow {
@@ -231,11 +231,10 @@ div#contentArea img.delete {
 
 div#contentArea div.userListTitle {
   z-index:2000;
-  width : 60%;
-  height : 32px;
+  width : 80%;
+  height : 40px;
   font-size: 20px;
   color : #FFF;
-  padding : 7px;
   background-color:#333;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -243,35 +242,37 @@ div#contentArea div.userListTitle {
   top : 2%;
   left : 10%;
 }
+div.userListTitle > span {
+  margin : 5px;
+  display : block;
+}
 
 div#contentArea div.userList {
   z-index:2000;
   background-color:#333;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
   width : 80%;
   height : 80%;
-  margin:0 auto;
   overflow : hidden;
   top : 10%;
   left : 10%;
 }
 
 @-webkit-keyframes scrollUserList {
-  0% { top : 0%; opacity : 0;}
-  5% { top : -9%; opacity : 1;}
-  100% { top : -170%; opacity : 1;}
+  0% { top : 100%; }
+  100% { top : -250%;}
 }
 div.userList table {
   position : absolute;
-  top : -100%;
+  top : -250%;
   margin : 30px;
   color : #FFF;
   -webkit-animation-name: scrollUserList;
   -webkit-animation-timing-function: linear;
   -webkit-animation-iteration-count: 1;
-  -webkit-animation-duration: 10s;
+  -webkit-animation-duration: 14s;
 }
 div.userList td.user_icon {
   padding-right : 10px;
@@ -290,9 +291,6 @@ div.userList td.puid {
   padding : 5px;
   font-size:30px;
   overflow : hidden;
-}
-div.userList td.puid span {
-  /*display:block;*/
 }
 
 

@@ -33,9 +33,11 @@ Chaos.animation.UserList.prototype = {
     this.viewArea = $('<div class="userList">');
     this.viewArea.hide();
     this.viewArea.appendTo('#contentArea');
-    this.viewTitle = $('<div class="userListTitle">').text('Now in the Hametsu Rounge.');
+    this.viewTitle = $('<div class="userListTitle">');
+    this.viewTitle.append($('<span>').text('Now in the Hametsu Rounge...'));
+    this.viewTitle.hide();
     this.viewTitle.appendTo('#contentArea');
-    this.viewTitle.show().fadeTo('slow', 0.8);
+    this.viewTitle.fadeTo('slow', 0.9).show('1000');
   },
 
   end : function() {
@@ -52,26 +54,27 @@ Chaos.animation.UserList.prototype = {
   },
 
   applyToAll : function(arr, callback) {
-    this.createTable(arr);
-    var i = 0;
-    var len = arr.length;
-    var tableWidth = this.viewArea.width();
     var self = this;
-    var puid_cells = this.table.find('td.puid');
-    (function() {
-      var d = arr[i];
-      Chaos.effect.pourText($(puid_cells[i]), d.twitter_name);
-      i++;
-      if ( len > i) {
-        setTimeout(arguments.callee, 300);
-      } else {
-        setTimeout(lng.bind(self.end, self), 2000);
-        callback();
-      }
-    })();
+    this.createTable(arr, function(){
+      var i = 0;
+      var len = arr.length;
+      var tableWidth = self.viewArea.width();
+      var puid_cells = self.table.find('td.puid');
+      (function() {
+        var d = arr[i];
+        Chaos.effect.pourText($(puid_cells[i]), d.twitter_name);
+        i++;
+        if ( len > i) {
+          setTimeout(arguments.callee, 400);
+        } else {
+          setTimeout(lng.bind(self.end, self), 2000);
+          callback();
+        }
+      })();
+    });
   },
 
-  createTable : function(arr) {
+  createTable : function(arr, callback) {
     var tableWidth = Math.floor(context.screenWidth * 0.8) - 60;
     var puidWidth = Math.floor((tableWidth - 220)/2);
     var table = $('<table>').width(tableWidth);
@@ -86,7 +89,7 @@ Chaos.animation.UserList.prototype = {
       )
     }
     this.viewArea.append(table);
-    this.viewArea.show().fadeTo('normal', 0.9);
+    this.viewArea.fadeTo('slow', 0.9).show(1000, callback);
     this.table = table;
   }
 }
