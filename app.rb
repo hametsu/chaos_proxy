@@ -17,7 +17,11 @@ require 'digest/md5'
 
 configure do
   set :settings, YAML.load_file("settings.yaml")
-  set :places, {'nanzuka' => 'pl440.nas93g.p-tokyo.nttpc.ne.jp', }
+  set :places, {
+                'nanzuka' => 'pl440.nas93g.p-tokyo.nttpc.ne.jp',
+                'mogra' => '',
+                'linuxcafe' => '',
+               }
 end
 
 
@@ -64,7 +68,7 @@ helpers do
     users.each do |user|
       unless twitter_name.include?(user['twitter_name'])
         twitter_name.push(user['twitter_name'])
-        response.push user
+        response.push(user)
       end
     end
     return response
@@ -154,6 +158,10 @@ get '/update/:unixtime' do
   return @elements.to_json
 end
 
+
+
+# -----------------------user関係--------------------------------
+
 get '/users.json' do
   # 最近アクセスしたユーザー一覧
   headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
@@ -167,11 +175,24 @@ get '/users' do
   erb :users
 end
 
-
-get '/onthe/:place' do
+get '/onthe/:place.json' do
+  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
+  elements = get_users()
+  @elements = []
+  elements.each do |user|
+    @elements.push(user) if user['puid'].include?(options.places[params[:place]])
+  end
+  return @elements.to_json
 end
 
-
+get '/onthe/:place' do
+  elements = get_users()
+  @elements = []
+  elements.each do |user|
+    @elements.push(user) if user['puid'].include?(options.places[params[:place]])
+  end
+  erb :users
+end
 
 
 
@@ -200,6 +221,12 @@ end
 
 
 
+
+
+
+
+
+
 get '/counts' do
   hashies = rank_by_accsess(3000, 0)
   # 重複する画像URIをカウントしない
@@ -214,10 +241,6 @@ get '/counts' do
   end
   erb :index
 end
-
-
-
-
 
 
 
