@@ -29,6 +29,12 @@ div.user{
     -moz-border-radius: 30px;
 }
 
+.user_icon,
+.user_info {
+    float:left;
+    margin-right:10px;
+}
+
 div.user img{
     border: 0px;
 }
