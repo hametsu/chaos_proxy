@@ -1,0 +1,66 @@
+/* -*- mode:css; coding:utf-8; -*- */
+body{
+    width: 100%;
+    height: 100%;
+    background: #292929;
+    font-size: 12pt;
+    text-decoration: blink !important;
+}
+
+div.user{
+    /* 文字の寄せや配置など */
+    text-align: left;
+    float: left;
+
+    /* ボックスの大きさや余白 */
+    width: 24em;
+    height: 3em;
+    padding: 10px;
+    padding-left: 30px;
+    margin: 1%;
+
+    /* 配色や装飾 */
+    background: #333;
+    color: #666;
+    border-style: solid;
+    border-color: #444;
+    border-width: 5px;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+}
+
+div.user img{
+    border: 0px;
+}
+
+/* リンク要素など */
+
+a{
+    font-size:2em !important;
+}
+
+a:link{
+    color: #c00 !important;
+}
+
+div.user:hover{
+    color: #f00 !important;
+    background-color: #555;
+    border-style: solid;
+    border-color: #999;
+    border-width: 5px;
+}
+
+span:hover{
+    border-style: none;
+}
+
+a:hover{
+    border-style: none !important;
+    color: #f00 !important;
+}
+
+a:visited{
+    text-decoration: none;
+    color: #900 !important;
+}
