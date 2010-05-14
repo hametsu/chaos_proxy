@@ -252,6 +252,12 @@ get '/imagine_breaker/' do
   erb :imagine_breaker
 end
 
+get '/imagine_breaker/json' do
+  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
+  @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
+  return @elements.to_json
+end
+
 get '/glitch/' do
   @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
   erb :glitch
