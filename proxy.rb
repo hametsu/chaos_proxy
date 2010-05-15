@@ -240,10 +240,12 @@ s = WEBrick::SequencialProxy.new(
   :Port => $settings["proxy"]["port"].to_i,
   #:Port => 4567,
   :ProxyVia => false,
+  :ProxyTimeout => nil,
   #:ProxyURI => URI.parse('http://localhost:3128/'),
   :ProxyContentHandler => handler,
   :AccessLog => [['/dev/null', ''],],
-  :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::DEBUG)
+  :Logger => WEBrick::Log::new(nil, WEBrick::Log::DEBUG)
+  #:Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::DEBUG)
 )
 trap('INT') { s.shutdown }
 s.start
