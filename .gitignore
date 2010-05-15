@@ -5,4 +5,4 @@ db/*
 nohup.out
 *.swp
 .DS_Store
-
+.rvmrc
