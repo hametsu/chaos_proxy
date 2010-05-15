@@ -4,9 +4,13 @@
 <div id="panel">
 <% @elements.each do |v| %>
   <div class="user" style="">
-    <a href="/user/<%= v['twitter_name'] %>"><img src='<%= v['user_icon'] %>' width="48" height="48" /></a>
-    <span title="<%= v['puid'] %>"><a href="http://twitter.com/<%= v['twitter_name'] %>"><%= v['twitter_name'] %></a></span><br />
-    <%= Time.at(v['accessed_at'].to_i).strftime('%m/%d %H:%M:%S') %>   
+    <div class="user_icon">
+      <a href="/user/<%= v['twitter_name'] %>"><img src='<%= v['user_icon'] %>' width="48" height="48" /></a>
+    </div>
+    <div class="user_info">
+      <span title="<%= v['puid'] %>"><a href="http://twitter.com/<%= v['twitter_name'] %>"><%= v['twitter_name'] %></a></span><br />
+      <%= Time.at(v['accessed_at'].to_i).strftime('%m/%d %H:%M:%S') %>
+    </div>
   </div>
 <% end %>
 </div>
