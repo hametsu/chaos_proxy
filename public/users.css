@@ -1,11 +1,7 @@
 /* -*- mode:css; coding:utf-8; -*- */
-body{
-    width:         100%;
-    height:        100%;
-    background:    #000;
+body {
     font-size: 12pt;
-    opacity: 1;
-    background-image: url(http://gyazo.com/0cd3e2877f4085080f072734131902a4.png);
+    background: #000 url(http://gyazo.com/0cd3e2877f4085080f072734131902a4.png);
 }
 
 div.user{
@@ -15,17 +11,14 @@ div.user{
 
     /* ボックスの大きさや余白 */
     width:   18em;
-    height:   3em;
     padding: 10px;
     padding-left: 20px;
     margin: 2px;
 
     /* 配色や装飾 */
     background:    #000;
-    color:        #666;
-    border-style: solid;
-    border-color: #333;
-    border-width: 5px;
+    color:         #666;
+    border: #333 solid 5px;
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;
 
@@ -44,32 +37,32 @@ div.user img{
 
 /* リンク要素など */
 
-a{
-    font-size:2em !important;
+a {
+    font-size:2em;
 }
 
-a:link{
-    color: #c00 !important;
+a:link {
+    color: #c00;
 }
 
-div.user:hover{
-    color: #f00 !important;
+div.user:hover {
+    color: #f00;
     background-color: #500;
     border-style: solid;
     border-color: #f00;
     border-width: 5px;
 }
 
-span:hover{
+span:hover {
     border-style: none;
 }
 
-a:hover{
-    border-style: none !important;
-    color: #f33 !important;
+a:hover {
+    border-style: none;
+    color: #f33;
 }
 
-a:visited{
+a:visited {
     text-decoration: none;
-    color: #900 !important;
+    color: #900;
 }
