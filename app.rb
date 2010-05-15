@@ -198,7 +198,7 @@ end
 
 get '/user/:name' do
   # twitterユーザー名でアクセス画像絞り込み表示
-  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
+  #headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = recents_by_name(params[:name])
   erb :list
 end
@@ -212,7 +212,7 @@ end
 
 get '/icon/:puid' do
   # puidからtwitterアイコンへのリダイレクト
-  headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
+  #headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = get_by_puid(params[:puid])
   user_icon = @elements.fetch('user_icon', 'http://s.twimg.com/a/1273278095/images/default_profile_4_normal.png')
   redirect user_icon
@@ -246,17 +246,17 @@ end
 
 
 
-
-get '/imagine_breaker/' do
-  @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
-  erb :imagine_breaker
-end
-
-get '/imagine_breaker/json' do
+get '/imagine_breaker.json' do
   headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
   return @elements.to_json
 end
+
+get '/imagine_breaker' do
+  @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
+  erb :imagine_breaker
+end
+
 
 get '/glitch/' do
   @elements = get_recents(options.settings["app"]["recents_num"], 0, 0)
