@@ -157,6 +157,7 @@ handler = Proc.new() {|req,res|
 
 
 # Webrickのデータ逐次送信、ストリーミング対応のProxyクラスらしいで。
+# http://d.hatena.ne.jp/ousttrue/20091118/1258539308
 module WEBrick
   class HTTPRequest
     attr_reader :socket
