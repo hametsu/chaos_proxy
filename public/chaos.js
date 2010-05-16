@@ -26,6 +26,7 @@ var context = {
   screenHeight : 0,
   screenWidth : 0,
   loadedImages : [],
+  userIcons : {},
   textdata : [],
   lastRetreiveTime : "1171815102" // An enough old time for first time
 } 
@@ -91,8 +92,23 @@ Chaos.effect = {
       size > 300 ? 150 :
       size > 200 ? 160 : 170;
   }
+}
 
+Chaos.image = {
+  addUserIcon : function(puid) {
+    if (context.userIcons[puid]) {
+      return;
+    } else {
+      var el = $('<img>').attr('src', 'http://chaos.yuiseki.net/icon/' + puid);
+      $('#imagePool').append(el);
+      context.userIcons[puid] = el;
+    }
+  }
+  ,
 
+  getUserIcon : function(puid) {
+    return context.userIcons[puid].clone();
+  }
 }
 
 /**
