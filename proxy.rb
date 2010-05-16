@@ -10,7 +10,6 @@ require 'hpricot'
 require 'stringio'
 require 'zlib'
 require 'kconv'
-require 'base64'
 
 require 'term/ansicolor'
 class String
@@ -19,7 +18,7 @@ end
 require 'yaml'
 $settings = YAML.load_file("settings.yaml")
 $allowed_hosts = [
-  "twitter.com", "m.twitter.com", "mobile.twitter.com", "search.twitter.com",
+  "twitter.com", "m.twitter.com", "mobile.twitter.com", "search.twitter.com", "api.twitter.com",
   "s.twimg.com", "a0.twimg.com", "a1.twimg.com", "a2.twimg.com", "a3.twimg.com", "widgets.twimg.com",
   "www.google.com", "www.google.co.jp", "ajax.googleapis.com",
   "clients1.google.co.jp", "maps.google.com", "maps.gstatic.com", "www.google-analytics.com",
@@ -96,6 +95,7 @@ handler = Proc.new() {|req,res|
 
   case path
   when /^http:\/\/twitter\.com\/$/
+    # 通常ブラウザのTwitter認証
     body = res.body
     if res.header["content-encoding"] == "gzip"
       Zlib::GzipReader.wrap(StringIO.new(res.body)){|gz| body = gz.read}
@@ -124,7 +124,7 @@ handler = Proc.new() {|req,res|
     res.body = utf_body.kconv(code, Kconv::UTF8)
 
   when /^http:\/\/mobile\.twitter\.com\/$/
-    # モバイル端末の認証
+    # モバイル端末のTwitter認証
     body = res.body
     if res.header["content-encoding"] == "gzip"
       Zlib::GzipReader.wrap(StringIO.new(res.body)){|gz| body = gz.read}
@@ -134,7 +134,7 @@ handler = Proc.new() {|req,res|
 
   when /\.(jpg|gif|png)/
     unless req.header.has_key?('authorization') or req.header.has_key?('Authorization')
-      loggin_image(path, puid)
+      logging_image(path, puid)
     end
   end
 =begin
@@ -157,95 +157,145 @@ handler = Proc.new() {|req,res|
 
 
 # Webrickのデータ逐次送信、ストリーミング対応のProxyクラスらしいで。
+
 module WEBrick
-  class HTTPRequest
-    attr_reader :socket
+  class HTTPResponse
+    attr_accessor :stream_query
+
+    def send_response(socket)
+      begin
+        if @stream_query
+          send_stream(socket)
+        else
+          setup_header()
+          send_header(socket)
+          send_body(socket)
+        end
+      rescue Errno::EPIPE, Errno::ECONNRESET, Errno::ENOTCONN => ex
+        @logger.debug(ex)
+        @keep_alive = false
+      rescue Exception => ex
+        @logger.error(ex)
+        @keep_alive = false
+      end
+    end
+
+    def send_stream(socket)
+      ::Net::HTTP.start(@request_uri.host, @request_uri.port, \
+                @stream_query[:proxy][0], @stream_query[:proxy][1]) do |http|
+        req = ::Net::HTTP::Get.new(@stream_query[:path], @stream_query[:header])
+        http.request(req) do |tmp_res|
+          @stream_query[:call_back].call self, tmp_res
+          setup_header()
+          send_header(socket)
+
+          tmp_res.read_body do |chunk|
+            socket << chunk
+            self.body << chunk
+          end
+        end
+                end
+                        @stream_query[:stream][:after_call].call @stream_query[:req], self
+    end
   end
 
-  class SequencialProxy < HTTPProxyServer
-    def initialize(config={}, default=Config::HTTP)
-      super(config, default)
-      @http_version="1.0"
-    end
+  class StreamProxy < WEBrick::HTTPProxyServer
 
     def proxy_service(req, res)
+      # Proxy Authentication
       proxy_auth(req, res)
-      begin
-        self.send("do_#{req.request_method}", req, res)
-      rescue NoMethodError
-        raise HTTPStatus::MethodNotAllowed,
-          "unsupported method `#{req.request_method}'."
-      rescue => err
-        puts "#{err.backtrace}"
-        puts "#{err.class}: #{err.message}"
-        raise HTTPStatus::ServiceUnavailable, err.message
-      end
-      if handler = @config[:ProxyContentHandler]
-        handler.call(req, res)
-      end
-    end
 
-    def do_GET(req, res)
-      uri = req.request_uri
+      # Create Request-URI to send to the origin server
+      uri  = req.request_uri
       path = uri.path.dup
       path << "?" << uri.query if uri.query
-      header = setup_proxy_header(req, res)
-      # send request
-      # Net::HTTPだと逐次にできないのでTCPSocketでやる
-      server=Net::BufferedIO.new(
-        TCPSocket.new(req.request_uri.host, req.request_uri.port))
-      server.writeline "GET #{path} HTTP/1.0"
-      header.each do |k, v|
-        server.writeline "#{k}: #{v}"
+
+      # Choose header fields to transfer
+      header = Hash.new
+      choose_header(req, header)
+      set_via(header)
+
+      # select upstream proxy server
+      if proxy = proxy_uri(req, res)
+        proxy_host = proxy.host
+        proxy_port = proxy.port
+        if proxy.userinfo
+          credentials = "Basic " + [proxy.userinfo].pack("m*")
+          credentials.chomp!
+          header['proxy-authorization'] = credentials
+        end
       end
-      server.writeline ""
-      # 逐次で返すため先にヘッダを処理する
-      response=Net::HTTPResponse.read_new(server)
-      # Convert Net::HTTP::HTTPResponse to WEBrick::HTTPResponse
+
+      response = nil
+      begin
+        http = Net::HTTP.new(uri.host, uri.port, proxy_host, proxy_port)
+        http.start{
+          if @config[:ProxyTimeout]
+            ##################################   these issues are
+            http.open_timeout = 30   # secs  #   necessary (maybe bacause
+            http.read_timeout = 60   # secs  #   Ruby's bug, but why?)
+            ##################################
+          end
+        case req.request_method
+        when "GET"  then
+          if uri.host.include?('nicovideo') or uri.host.include?('youtube')
+            response = ::Net::HTTPResponse.new("1.1", "200", "OK")
+
+            res.stream_query = {:req => req, :path => path, :header => header, \
+              :proxy => [proxy_host, proxy_port], :stream => @streaming}
+
+            res.stream_query[:call_back] = Proc.new do |webrick_res, net_res|
+              webrick_res.status = net_res.code.to_i
+              choose_header(net_res, webrick_res)
+              set_cookie(net_res, webrick_res)
+              set_via(webrick_res)
+            end
+          else
+            response = http.get(path, header)
+          end
+        when "POST" then response = http.post(path, req.body || "", header)
+        when "HEAD" then response = http.head(path, header)
+        else
+          raise HTTPStatus::MethodNotAllowed, "unsupported method `#{req.request_method}'."
+        end
+        }
+      rescue => err
+        logger.debug("#{err.class}: #{err.message}")
+        raise HTTPStatus::ServiceUnavailable, err.message
+      end
+
+      res['proxy-connection'] = "close"
+      res['connection'] = "close"
+
       res.status = response.code.to_i
       choose_header(response, res)
       set_cookie(response, res)
       set_via(res)
-      # Persistent connection requirements are mysterious for me.
-      # So I will close the connection in every response.
-      # 持続的接続を強制的に無効にしている…
-      res['proxy-connection'] = "close"
-      res['connection'] = "close"
-      res.send_header(req.socket)
-      res.body = ''
-      while true  do
-        begin
-          block=''
-          server.read(4096, block)
-        rescue EOFError => e
-          break
-        ensure
-          res.body << block
-          req.socket << block
-
-          if block=='' then
-            break
-          end
-        end
-      end
-      def res.send_message(socket)
-        # dummy
+      res.body = response.body unless res.stream_query
+      if handler = @config[:ProxyContentHandler]
+        handler.call(req, res)
       end
     end
   end
 end
 
 
-s = WEBrick::SequencialProxy.new(
+
+
+
+
+
+config = {
   :Port => $settings["proxy"]["port"].to_i,
-  #:Port => 4567,
   :ProxyVia => false,
-  :ProxyTimeout => nil,
   #:ProxyURI => URI.parse('http://localhost:3128/'),
   :ProxyContentHandler => handler,
   :AccessLog => [['/dev/null', ''],],
-  :Logger => WEBrick::Log::new(nil, WEBrick::Log::DEBUG)
-  #:Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::DEBUG)
-)
-trap('INT') { s.shutdown }
-s.start
+  :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL)
+}
+
+stream_proxy = WEBrick::StreamProxy.new(config)
+[:INT, :TERM].each { |signal| Signal.trap(signal){stream_proxy.shutdown} }
+stream_proxy.start
+
+
