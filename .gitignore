@@ -1,4 +1,3 @@
-ttserv_img_ctl
 *.log
 settings.yaml
 db/*

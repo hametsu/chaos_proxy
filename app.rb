@@ -87,7 +87,6 @@ helpers do
 
   def recents_by_name(name)
     # twitter user nameでログを絞り込み
-    puts name
     rdb_ = RDBTBL::new
     rdb_.open(options.settings["twitter"]["host"].to_s, options.settings["twitter"]["port"].to_i)
     qry_ = RDBQRY::new(rdb_)
@@ -198,7 +197,6 @@ end
 
 get '/user/:name' do
   # twitterユーザー名でアクセス画像絞り込み表示
-  #headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = recents_by_name(params[:name])
   erb :list
 end
@@ -212,7 +210,6 @@ end
 
 get '/icon/:puid' do
   # puidからtwitterアイコンへのリダイレクト
-  #headers 'Content-Type' => 'application/json', 'Access-Control-Allow-Origin' => '*'
   @elements = get_by_puid(params[:puid])
   user_icon = @elements.fetch('user_icon', 'http://s.twimg.com/a/1273278095/images/default_profile_4_normal.png')
   redirect user_icon

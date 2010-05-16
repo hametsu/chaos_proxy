@@ -36,12 +36,13 @@ Chaos.startImageLoader = function() {
     context.lastRetreiveTime = d[0].accessed_at;
   }
 
-  function storeImage(jqObj, width, height, zIndex) {
+  function storeImage(jqObj, width, height, zIndex, puid) {
     context.loadedImages.push({
       obj : jqObj,
       width : width,
       height : height,
-      zIndex : zIndex
+      zIndex : zIndex,
+      puid : puid
     });
     if (context.loadedImages.length > SETTINGS.MAX_KEEP_IMAGES_COUNT) {
       removeImage(context.loadedImages.shift());
@@ -80,6 +81,7 @@ Chaos.startImageLoader = function() {
     var timer = setInterval(function() {
 
       var url = data[i].uri;
+      var puid = data[i].puid;
       if (url.match(/media.tumblr.com/)) {
         url = url.replace(/(http.*)(500|400)(.jpg|.png)$/, '$1250$3');
       }
@@ -92,6 +94,7 @@ Chaos.startImageLoader = function() {
 
       var jqObj = $('<img>').attr('src', url);
       context.textdata.push(url);
+      Chaos.image.addUserIcon(puid);
       // Put to the tmp area (invisible) and waiting load the image
       imagePool.prepend(jqObj);
       jqObj.bind('load', function(a) {
@@ -107,8 +110,8 @@ Chaos.startImageLoader = function() {
           var posXY = Chaos.effect.getRandomXY(width, height);
           var zIndex = Chaos.effect.getImageZIndex(width, height);
 
-          storeImage(jqObj, width, height, zIndex);
-          currentAnim.applyToElm(jqObj, posXY, zIndex);
+          storeImage(jqObj, width, height, zIndex, puid);
+          currentAnim.applyToElm(jqObj, posXY, zIndex, puid, width);
         }
       });
       if (++i>=len) {
@@ -193,24 +196,37 @@ Chaos.animation.DropDown.prototype = {
 
   applyCount : 0,
 
-  applyToElm : function(jqObj, xy, zIndex) {
+  applyToElm : function(jqObj, xy, zIndex, puid) {
     jqObj.css({
       'top' : null,
       'left' : xy.x,
       'zIndex' : zIndex
     });
+    var icon = Chaos.image.getUserIcon(puid);
+    icon.css({
+      'zIndex' : zIndex + 1,
+      'border' : '1px solid #777'
+    });
     if (zIndex > 150) {
+      icon.css({'width' : 20, 'left' : xy.x - 10});
       if (this.applyCount++%3 == 0) {
-        this.imageLayerVerySmall.append(jqObj)
+        this.imageLayerVerySmall.append(jqObj);
+        this.imageLayerVerySmall.append(icon); 
       } else {
         this.imageLayerSmall.append(jqObj)
+        this.imageLayerSmall.append(icon)
       }
     } else
     if (zIndex > 120) {
+      icon.css({'width' : 40, 'left' : xy.x+5, 'margin-top' : 5})
       this.imageLayerMiddle.append(jqObj);
+      this.imageLayerMiddle.append(icon);
     } else {
+      icon.css({'width' : 60, 'left' : xy.x+10, 'margin-top':10})
       this.imageLayerLarge.append(jqObj);
+      this.imageLayerLarge.append(icon);
     }
+
   },
 
   applyToAll : function(callback) {
@@ -219,7 +235,7 @@ Chaos.animation.DropDown.prototype = {
     (function() {
       var d = this.dataArr[i++];
       var xy = Chaos.effect.getRandomXY(d.width, d.height);
-      this.applyToElm(d.obj, xy, d.zIndex); 
+      this.applyToElm(d.obj, xy, d.zIndex, d.puid); 
       if (len > i) {
         setTimeout(lng.bind(arguments.callee, this), 300);
       } else {
@@ -274,19 +290,30 @@ Chaos.animation.Wave.prototype = {
     });
   },
 
-  applyToElm : function(jqObj, xy, zIndex) {
+  applyToElm : function(jqObj, xy, zIndex, puid) {
     jqObj.css({
       'top' : xy.y,
       'left' : xy.x,
       'zIndex' : zIndex
     });
+    var icon = Chaos.image.getUserIcon(puid);
+    icon.css({
+      'zIndex' : zIndex + 1,
+      'border' : '1px solid #777'
+    });
     if (zIndex > 140) {
+      icon.css({'width' : 20, 'left' : xy.x - 10, 'top' : xy.y - 10});
       this.imageLayerSmall.append(jqObj);
+      this.imageLayerSmall.append(icon);
     } else
     if (zIndex > 120) {
+      icon.css({'width' : 40, 'left' : xy.x + 5, 'top' : xy.y + 5});
       this.imageLayerMiddle.append(jqObj);
+      this.imageLayerMiddle.append(icon);
     } else {
+      icon.css({'width' : 60, 'left' : xy.x + 10, 'top' : xy.y + 10});
       this.imageLayerLarge.append(jqObj);
+      this.imageLayerLarge.append(icon);
     }
     if (context.enableCSSAnimation) {
       jqObj.addClass('show');
@@ -301,7 +328,7 @@ Chaos.animation.Wave.prototype = {
     (function() {
       var d = this.dataArr[i++];
       var xy = Chaos.effect.getRandomXY(d.width, d.height);
-      this.applyToElm(d.obj, xy, d.zIndex); 
+      this.applyToElm(d.obj, xy, d.zIndex, d.puid); 
       if (len > i) {
         setTimeout(lng.bind(arguments.callee, this), 200);
       } else {
@@ -349,7 +376,7 @@ Chaos.animation.Tile.prototype = {
     }
   },
 
-  applyToElm : function(jqObj) {
+  applyToElm : function(jqObj, xy, zindex, puid) {
     this.imageLayer.prepend(jqObj);
   },
 
@@ -358,7 +385,7 @@ Chaos.animation.Tile.prototype = {
     var len = this.dataArr.length;
     (function() {
       var d = this.dataArr[i++];
-      this.applyToElm(d.obj); 
+      this.applyToElm(d.obj, null, null, d.puid); 
       if (len > i) {
         setTimeout(lng.bind(arguments.callee, this), 300);
       } else {

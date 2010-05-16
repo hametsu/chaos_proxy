@@ -157,7 +157,11 @@ handler = Proc.new() {|req,res|
 
 
 # Webrickのデータ逐次送信、ストリーミング対応のProxyクラスらしいで。
+<<<<<<< HEAD:proxy.rb
 
+=======
+# http://d.hatena.ne.jp/ousttrue/20091118/1258539308
+>>>>>>> 01a5496ae42cb50615d6744281c71eda5d827d48:proxy.rb
 module WEBrick
   class HTTPResponse
     attr_accessor :stream_query
@@ -292,6 +296,7 @@ config = {
   :ProxyContentHandler => handler,
   :AccessLog => [['/dev/null', ''],],
   :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL)
+<<<<<<< HEAD:proxy.rb
 }
 
 stream_proxy = WEBrick::StreamProxy.new(config)
@@ -299,3 +304,8 @@ stream_proxy = WEBrick::StreamProxy.new(config)
 stream_proxy.start
 
 
+=======
+)
+trap('INT') { s.shutdown }
+s.start
+>>>>>>> 01a5496ae42cb50615d6744281c71eda5d827d48:proxy.rb
