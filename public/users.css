@@ -1,24 +1,31 @@
 /* -*- mode:css; coding:utf-8; -*- */
 body {
+    margin: 0px;
+    padding: 0px;
+    border: 0px none;
     font-size: 12pt;
     background: #000 url(http://gyazo.com/0cd3e2877f4085080f072734131902a4.png);
+}
+
+#panel {
+    padding: 40px;
 }
 
 div.user{
     /* 文字の寄せや配置など */
     text-align: left;
-    float:      left;
+    float: left;
 
     /* ボックスの大きさや余白 */
-    width:   18em;
+    width: 21em;
     padding: 10px;
     padding-left: 20px;
-    margin: 2px;
+    margin: 4px;
 
     /* 配色や装飾 */
-    background:    #000;
-    color:         #666;
-    border: #333 solid 5px;
+    background: #300;
+    color: #966;
+    border: #633 solid 5px;
     -webkit-border-radius: 30px;
     -moz-border-radius: 30px;
 
@@ -27,8 +34,8 @@ div.user{
 
 .user_icon,
 .user_info {
-    float:left;
-    margin-right:10px;
+    float: left;
+    margin-right: 10px;
 }
 
 div.user img{
@@ -38,7 +45,7 @@ div.user img{
 /* リンク要素など */
 
 a {
-    font-size:2em;
+    font-size: 2em;
 }
 
 a:link {
