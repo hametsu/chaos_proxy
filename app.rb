@@ -18,7 +18,8 @@ require 'digest/md5'
 configure do
   set :settings, YAML.load_file("settings.yaml")
   set :places, {
-                'nanzuka' => 'pl440.nas93g.p-tokyo.nttpc.ne.jp',
+                # 'nanzuka' => 'pl440.nas93g.p-tokyo.nttpc.ne.jp',
+                'nanzuka' => 'pl090.nas93i.p-tokyo.nttpc.ne.jp',
                 'mogra' => '',
                 'linuxcafe' => '',
                }
