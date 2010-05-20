@@ -7,7 +7,6 @@ var loader;
 var maxRetreiveCount;
 var interval;
 var lastRetreiveTime = "1171815102"; // An enough old time for first time
-var blockLoad = false;
 var timer = 0;
 
 onmessage = function(e) {

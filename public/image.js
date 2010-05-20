@@ -2,16 +2,14 @@
  * Create an image loader
  */
 Chaos.startImageLoader = function() {
-  var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
 
-  var idol = false;
   var idolCount = 0;
   var animIndex = 0;
 
   var imagePool = $('#imagePool');
   var currentAnim = getNextAnimation(imagePool);
 
-  var imageLoader = new Worker('loader_worker.js');
+  var imageLoader = new Worker('worker_image_loader.js');
   imageLoader.onmessage = function(d) {
     imageLoader.onmessage = function(e) {
       renderImages(e.data);
@@ -24,10 +22,6 @@ Chaos.startImageLoader = function() {
     interval : SETTINGS.IMAGE_RETREIVE_INTERVAL
   });
 
-
-  function setLatestImageRetreiveTime(d) {
-    context.lastRetreiveTime = d[0].accessed_at;
-  }
 
   function storeImage(jqObj, width, height, zIndex, puid) {
     context.loadedImages.push({
@@ -66,7 +60,6 @@ Chaos.startImageLoader = function() {
       return;
     }
     idolCount = 0;
-    setLatestImageRetreiveTime(data);
     data.reverse();
     var len = data.length;
     var i = 0;
@@ -74,6 +67,7 @@ Chaos.startImageLoader = function() {
 
       var url = data[i].uri;
       var puid = data[i].puid;
+      //TODO move to worker
       if (url.match(/media.tumblr.com/)) {
         url = url.replace(/(http.*)(500|400)(.jpg|.png)$/, '$1250$3');
       }
@@ -133,7 +127,7 @@ Chaos.startImageLoader = function() {
 
   function changeAnimation() {
     imageLoader.postMessage({eventName:'stop'});
-    currentAnim.end22(function() {
+    currentAnim.end(function() {
       var next = getNextAnimation();
       next.applyToAll(function() {
         imageLoader.postMessage({eventName:'start'});
@@ -172,7 +166,7 @@ Chaos.animation.DropDown.prototype = {
     this.imageLayerVerySmall  = area0;
   },
 
-  end22 : function(callback) {
+  end : function(callback) {
     var self = this;
     $('#contentArea').fadeOut('slow', onsuccess);
 
@@ -265,7 +259,7 @@ Chaos.animation.Wave.prototype = {
     area1.fadeTo(0, 0.8);
   },
 
-  end22 : function(callback) {
+  end : function(callback) {
     var self = this;
     self.imageLayerLarge.fadeOut(600, function() {
       self.imageLayerMiddle.fadeOut(700, function() {
@@ -350,7 +344,7 @@ Chaos.animation.Tile.prototype = {
     this.imageLayer  = area;
   },
 
-  end22 : function(callback) {
+  end : function(callback) {
     var self = this;
     if (context.enableCSSAnimation) {
       this.imageLayer.addClass('endTile');

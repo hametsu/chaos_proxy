@@ -1,15 +1,21 @@
+/**
+ *
+ */
 Chaos.startUserList = function() {
   var animation = new Chaos.animation.UserList();
-  var api = '/users.json';
 
-  var userListLoader = new Chaos.Loader();
-  load();
-
-  function load() {
-    userListLoader.load(api, renderUserList);
+  var loader = new Worker('worker_user_loader.js');
+  loader.onmessage = function() {
+    loader.onmessage = renderUserList;
+    loader.postMessage({eventName : 'start'});
   }
+  loader.postMessage({
+    eventName : 'setup',
+    interval : SETTINGS.USER_LIST_RETREIVE_INTERVAL
+  });
 
-  function renderUserList(dataArr) {
+  function renderUserList(event) {
+    var dataArr = event.data;
     if (dataArr.length == 0) {
       return;
     }
@@ -35,7 +41,7 @@ Chaos.animation.UserList.prototype = {
     this.viewArea.hide();
     this.viewArea.appendTo('#contentArea');
     this.viewTitle = $('<div class="userListTitle">');
-    this.viewTitle.append($('<span>').text('Now in the Hametsu Rounge...'));
+    this.viewTitle.append($('<span>').text('Latest users in Hametsu Lounge...'));
     this.viewTitle.hide();
     this.viewTitle.appendTo('#contentArea');
     this.viewTitle.fadeTo('slow', 0.9).show('1000');
@@ -48,10 +54,6 @@ Chaos.animation.UserList.prototype = {
       self.viewTitle.remove();
       self.viewArea.remove();
     });
-  },
-
-  applyToText : function(data, callback) {
-    var message = data.url;
   },
 
   applyToAll : function(arr, callback) {

@@ -50,6 +50,20 @@ div#initialMask {
   top : 0; left : 0;
 }
 
+@-webkit-keyframes flashback {
+  0% { opacity : 0 }
+  3% { opacity : 0.5 }
+  8% { opacity : 0 }
+  100% { opacity : 0 }
+}
+div.flashback {
+  opacity : 0;
+  -webkit-animation-timing-function: linear;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-name: flashback;
+  -webkit-animation-duration: 13s;
+}
+
 /** 
  * Invisible area.
  * For calculate an acutial image size.

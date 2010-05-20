@@ -75,10 +75,12 @@ Chaos.bootstrap = function() {
     if ($.browser.mozilla) {
       msgs.push(MESSAGES.DETECTED_FIREFOX);
       msgs.push(MESSAGES.ANIMATION_OFF);
+      msgs.push(MESSAGES.BROWSER_NOTICE);
     } 
     if ($.browser.opera) {
       msgs.push(MESSAGES.DETECTED_OPERA);
       msgs.push(MESSAGES.ANIMATION_OFF);
+      msgs.push(MESSAGES.BROWSER_NOTICE);
     } 
     msgs.push(MESSAGES.INIT_SCREEN_FINISH);
 
@@ -103,11 +105,15 @@ Chaos.bootstrap = function() {
 
   function flashBackimage() {
     var mask = $('#initialMask');
-    setInterval(function() {
-      mask.fadeTo('normal', 0.4, function() {
-        mask.fadeTo('slow', 0.01);
-      });
-    }, SETTINGS.FLASH_EFFECT_INTERVAL);
+    if (context.enableCSSAnimation) {
+      mask.addClass('flashback');
+    } else {
+      setInterval(function() {
+        mask.fadeTo('normal', 0.4, function() {
+          mask.fadeTo('slow', 0.01);
+        });
+      }, SETTINGS.FLASH_EFFECT_INTERVAL);
+    }
   }
 
   function initMessageArea(callback) {
