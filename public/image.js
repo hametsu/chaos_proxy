@@ -4,7 +4,6 @@
 Chaos.startImageLoader = function() {
   var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
 
-  var blockLoad = false;
   var idol = false;
   var idolCount = 0;
   var animIndex = 0;
@@ -12,25 +11,19 @@ Chaos.startImageLoader = function() {
   var imagePool = $('#imagePool');
   var currentAnim = getNextAnimation(imagePool);
 
-
-  var imageLoader = new Chaos.Loader(imageFilter); 
-  (function() {
-    if (!blockLoad) {
-      blockLoad = true;
-      imageLoader.load(createUri(), renderImages);
+  var imageLoader = new Worker('loader_worker.js');
+  imageLoader.onmessage = function(d) {
+    imageLoader.onmessage = function(e) {
+      renderImages(e.data);
     }
-    setTimeout(arguments.callee, SETTINGS.IMAGE_RETREIVE_INTERVAL);
-  })();
+    imageLoader.postMessage({eventName:'start'});
+  };
+  imageLoader.postMessage({
+    eventName:'setup', 
+    maxRetreiveCount : SETTINGS.MAX_RETREIVE_COUNT,
+    interval : SETTINGS.IMAGE_RETREIVE_INTERVAL
+  });
 
-  function createUri() {
-    return '/update/' + context.lastRetreiveTime + '?limit=' + SETTINGS.MAX_RETREIVE_COUNT;
-  }
-
-  function imageFilter(arr) {
-    return arr.filter(function(data) {
-      return !REGEXP_FILTER_IMAGE_URL.test(data.uri)
-    });
-  }
 
   function setLatestImageRetreiveTime(d) {
     context.lastRetreiveTime = d[0].accessed_at;
@@ -65,7 +58,6 @@ Chaos.startImageLoader = function() {
 
   function renderImages(data) {
     if (data.length == 0) {
-      blockLoad = false;
       idolCount+=2;
       if (idolCount > 5) {
         idolCount = 0;
@@ -116,9 +108,10 @@ Chaos.startImageLoader = function() {
       });
       if (++i>=len) {
         clearInterval(timer);
-        blockLoad = false;
         if (currentAnim.roopCount++ > currentAnim.roopLimit) {
           changeAnimation();
+        } else {
+          imageLoader.postMessage({eventName:'start'});
         }
       }
     }, 300);
@@ -139,16 +132,15 @@ Chaos.startImageLoader = function() {
   }
 
   function changeAnimation() {
-    blockLoad = true;
+    imageLoader.postMessage({eventName:'stop'});
     currentAnim.end22(function() {
       var next = getNextAnimation();
       next.applyToAll(function() {
-        blockLoad = false;
+        imageLoader.postMessage({eventName:'start'});
         currentAnim = next;
       });
     });
   }
-
 }
 
 Chaos.animation.DropDown = function(pool, dataArr) {

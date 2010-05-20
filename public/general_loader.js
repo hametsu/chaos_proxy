@@ -44,26 +44,10 @@ Chaos.Loader.prototype = {
    * @params {Function} callback
    */
   _loadFromSameDomain : function(uri, callback) {
-//    var self = this;
-//    $.getJSON(uri, {}, function(response, status) {
-//      callback.call(self, response);
-//    });
-    var url = uri;
     var self = this;
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, true);
-    xhr.onreadystatechange = function(){
-      if ( xhr.readyState == 4 ) {
-        if ( xhr.status == 200 ) {
-          var data = JSON.parse(xhr.responseText);
-          callback.call(self, data);
-        } else {
-          console.error('Error #getImageFromSameDomain');
-          console.error(xhr.responseText);
-        }
-      }
-    };
-    xhr.send(null);
+    $.getJSON(uri, {}, function(response, status) {
+      callback.call(self, response);
+    });
   },
 
   /**
