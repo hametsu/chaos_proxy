@@ -14,6 +14,7 @@ Chaos.startUserList = function() {
       return;
     }
     animation.setup();
+    dataArr = dataArr.slice(0, 16);
     animation.applyToAll(dataArr, function(){
       setTimeout(load, SETTINGS.USER_LIST_RETREIVE_INTERVAL);
     });
