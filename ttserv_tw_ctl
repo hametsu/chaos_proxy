@@ -8,7 +8,7 @@
 # configuration variables
 prog="ttservctl"
 cmd="ttserver"
-basedir="/tmp/chaos/db"
+basedir="/tmp/fs/db"
 port="1984"
 pidfile="$basedir/tw_tt_pid"
 #logfile="$basedir/tw_tt_log"
