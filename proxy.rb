@@ -18,11 +18,14 @@ end
 require 'yaml'
 $settings = YAML.load_file("settings.yaml")
 $allowed_hosts = [
-  "twitter.com", "m.twitter.com", "mobile.twitter.com", "search.twitter.com", "api.twitter.com",
+  "twitter.com", "m.twitter.com", "mobile.twitter.com",
+  "search.twitter.com", "api.twitter.com",
   "s.twimg.com", "a0.twimg.com", "a1.twimg.com", "a2.twimg.com", "a3.twimg.com", "widgets.twimg.com",
   "www.google.com", "www.google.co.jp", "ajax.googleapis.com",
   "clients1.google.co.jp", "maps.google.com", "maps.gstatic.com", "www.google-analytics.com",
-  "wiki.github.com"
+  "wiki.github.com",
+  "clife-stg.cerevo.com", "clife.cerevo.com",
+  "www.ustream.tv", "rgw.ustream.tv"
 ]
 $allowed_ctypes = ["image/jpeg", "image/gif", "image/png", nil]
 
@@ -72,6 +75,8 @@ def logging_image(path, puid)
   rdb.close
 end
 
+
+
 handler = Proc.new() {|req,res|
   puts ''
   path = req.unparsed_uri
@@ -91,6 +96,9 @@ handler = Proc.new() {|req,res|
     end
   else
     puts "#{puid} as #{twitter_name.magenta.bold.on_blue} at #{req.host.green.on_black}"
+    foo = File.open("/tmp/fs/proxy.log", 'w')
+    foo.puts "#{puid} as #{twitter_name} at #{req.host}"
+    foo.close
   end
 
   case path
