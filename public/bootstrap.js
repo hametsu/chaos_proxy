@@ -89,6 +89,7 @@ Chaos.bootstrap = function() {
       flashBackimage();
       animateBackground();
       Chaos.startUserList();
+      Chaos.startProxyLog();
       setTimeout(Chaos.startImageLoader, 3000);
     });
   }

@@ -312,6 +312,33 @@ div.userList td.puid {
 }
 
 
+div#logScreen {
+  position : absolute;
+  overflow : hidden;
+  width : 100%;
+  bottom : 0;
+  left : 0;
+  z-index : 8000;
+  font-size: 20px;
+  color : #0F0;
+  font-family: 'courier';
+  opacity :  0.8;
+}
+
+div#logScreen p.log {
+  margin-top:15px;
+}
+
+span.twitterName {
+  background-color:#FFF;
+  color:#000;
+}
+
+div#logScreen p.space {
+  margin-top:23px;
+}
+
+
 /******************* sideMenu **********************/
 div.slideMenu {
   z-index : 9999;
