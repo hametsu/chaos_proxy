@@ -15,6 +15,9 @@ ruby proxy.rb
 # start sinatra server
 nohup ruby app.rb -p 4567 &
 
+# start websocket server
+ruby websokets.rb&
+
 
 
 TODO:
