@@ -1,6 +1,5 @@
-
-
-
+Chaos Proxy
+http://github.com/yuiseki/chaos_proxy
 
 HOWTO:
 # setup your settings
@@ -16,27 +15,9 @@ ruby proxy.rb
 nohup ruby app.rb -p 4567 &
 
 # start websocket server
-ruby websokets.rb&
-
-
-
-TODO:
-ResolveShortenImageUrl
-  movapic
-  twitpic
-  tumblr
-  flickr
-  hatena fotolife
-
-
-
+ruby websokets.rb &
 
 NOTE:
-
-KIOSK for Firefox https://addons.mozilla.jp/firefox/details/1659
-and
-Firefox Safe-Mode http://kb.mozillazine.org/Safe_Mode_(Firefox)
-
 junkure
 http://junkure.yuiseki.net/
 
