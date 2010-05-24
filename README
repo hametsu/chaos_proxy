@@ -17,6 +17,9 @@ nohup ruby app.rb -p 4567 &
 # start websocket server
 ruby websokets.rb &
 
+ToDo:
+http://github.com/yuiseki/chaos_proxy/issues
+
 NOTE:
 junkure
 http://junkure.yuiseki.net/
