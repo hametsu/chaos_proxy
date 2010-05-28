@@ -10,7 +10,7 @@ var lastRetreiveTime = "1171815102"; // An enough old time for first time
 var timer = 0;
 
 onmessage = function(e) {
-  var data = e.data;
+  var data = JSON.parse(e.data);
   if (data.eventName == 'setup') {
     setup(data);
   } else
@@ -47,7 +47,23 @@ function createUri() {
 }
 
 function handleLoad(arr) {
-  postMessage(arr);
+  // replace image url to smaller size (flickr, tumblr)
+  var result = arr.map(function(d) {
+    var url = d.uri;
+    if (url.match(/media.tumblr.com/)) {
+      url = url.replace(/(http.*)(500|400)(.jpg|.png)$/, '$1250$3');
+    }
+    if (url.match(/data.tumblr.com/)) {
+      url = url.replace(/(http.*)(1280)(.jpg|.png)(\?AWSAccessKeyId.*)$/, '$1400$3');
+    }
+    if (url.match(/farm5.static.flickr.com/)) {
+      url = url.replace(/(http.*)(_b.jpg|_o.jpg)$/, '$1.jpg');
+    }
+    d.uri = url;
+    return d;
+  });
+  postMessage(JSON.stringify(result));
+
   if (arr.length == 0) {
     timer = setTimeout(load, interval);
   } else {

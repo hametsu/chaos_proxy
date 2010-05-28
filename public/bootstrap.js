@@ -17,6 +17,10 @@ Chaos.bootstrap = function() {
     if (maxsize) {
       SETTINGS.MAX_IMAGE_SIZE=maxsize[1];
     }
+    var hametsu = location.href.match(/hametsu=(true|false)/i);
+    if (hametsu) {
+      context.hametsuMode = !!hametsu;
+    }
   }
 
   function initScreen() {

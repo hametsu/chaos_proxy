@@ -22,12 +22,12 @@ var MESSAGES = {
 
 
 var context = {
+  hametsuMode : false,
   enableCSSAnimation : false,
   screenHeight : 0,
   screenWidth : 0,
   loadedImages : [],
   userIcons : {},
-  textdata : [],
   lastRetreiveTime : "1171815102" // An enough old time for first time
 } 
 
