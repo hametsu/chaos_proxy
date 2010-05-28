@@ -39,7 +39,7 @@ Chaos.animation.UserList.prototype = {
     this.viewArea.hide();
     this.viewArea.appendTo('#contentArea');
     this.viewTitle = $('<div class="userListTitle">');
-    this.viewTitle.append($('<span>').text('Latest users in Hametsu Lounge...'));
+    this.viewTitle.append($('<span>').text('Latest users in Mogra...'));
     this.viewTitle.hide();
     this.viewTitle.appendTo('#contentArea');
     this.viewTitle.fadeTo('slow', 0.9).show('1000');

@@ -17,7 +17,7 @@ var MESSAGES = {
   DETECTED_FIREFOX : 'Detected Firefox...',
   DETECTED_OPERA : 'Detected Opera....',
   ANIMATION_OFF : 'Animation : OFF',
-  BROWSER_NOTICE : 'Full version is enable in Chrome.'
+  BROWSER_NOTICE : 'Full version is enable in Safari 4...'
 }
 
 
