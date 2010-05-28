@@ -133,6 +133,7 @@ div#contentArea div.z3 {
 }
 div#contentArea div.dropDownFast2 {
   z-index : 1010;
+  -webkit-perspective: 500;
 }
 div#contentArea div.dropDownFast2 img{
   top : 9999px;

@@ -199,32 +199,35 @@ Chaos.animation.DropDown.prototype = {
 
   applyCount : 0,
 
+  getIcon : function(puid, zIndex) {
+    var icon = Chaos.image.getUserIcon(puid);
+    icon.css({
+      'zIndex' : zIndex + 1,
+      'border' : '1px solid #777'
+    });
+    return icon;
+  },
+
   applyToElm : function(jqObj, xy, zIndex, puid) {
     jqObj.css({
       'top' : null,
       'left' : xy.x,
       'zIndex' : zIndex
     });
-    var icon = Chaos.image.getUserIcon(puid);
-    icon.css({
-      'zIndex' : zIndex + 1,
-      'border' : '1px solid #777'
-    });
     if (zIndex > 150) {
-      icon.css({'width' : 20, 'left' : xy.x - 10});
       if (this.applyCount++%3 == 0) {
         this.imageLayerVerySmall.append(jqObj);
-        this.imageLayerVerySmall.append(icon); 
       } else {
         this.imageLayerSmall.append(jqObj)
-        this.imageLayerSmall.append(icon)
       }
     } else
     if (zIndex > 120) {
+      var icon = this.getIcon(puid, zIndex);
       icon.css({'width' : 40, 'left' : xy.x+5, 'margin-top' : 5})
       this.imageLayerMiddle.append(jqObj);
       this.imageLayerMiddle.append(icon);
     } else {
+      var icon = this.getIcon(puid, zIndex);
       icon.css({'width' : 60, 'left' : xy.x+10, 'margin-top':10})
       this.imageLayerLarge.append(jqObj);
       this.imageLayerLarge.append(icon);
@@ -293,17 +296,22 @@ Chaos.animation.Wave.prototype = {
     });
   },
 
+  getIcon : function(puid, zIndex) {
+    var icon = Chaos.image.getUserIcon(puid);
+    icon.css({
+      'zIndex' : zIndex + 1,
+      'border' : '1px solid #777'
+    });
+    return icon;
+  },
+
   applyToElm : function(jqObj, xy, zIndex, puid) {
     jqObj.css({
       'top' : xy.y,
       'left' : xy.x,
       'zIndex' : zIndex
     });
-    var icon = Chaos.image.getUserIcon(puid);
-    icon.css({
-      'zIndex' : zIndex + 1,
-      'border' : '1px solid #777'
-    });
+    var icon = this.getIcon(puid, zIndex);
     if (zIndex > 140) {
       icon.css({'width' : 20, 'left' : xy.x - 10, 'top' : xy.y - 10});
       this.imageLayerSmall.append(jqObj);
