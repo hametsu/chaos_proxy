@@ -9,19 +9,19 @@ Chaos.startImageLoader = function() {
   var imagePool = $('#imagePool');
   var currentAnim = getNextAnimation(imagePool);
 
+  // create worker process
   var imageLoader = new Worker('worker_image_loader.js');
   imageLoader.onmessage = function(d) {
     imageLoader.onmessage = function(e) {
-      renderImages(e.data);
+      renderImages(JSON.parse(e.data));
     }
-    imageLoader.postMessage({eventName:'start'});
+    imageLoader.postMessage(JSON.stringify({eventName:'start'}));
   };
-  imageLoader.postMessage({
+  imageLoader.postMessage(JSON.stringify({
     eventName:'setup', 
     maxRetreiveCount : SETTINGS.MAX_RETREIVE_COUNT,
     interval : SETTINGS.IMAGE_RETREIVE_INTERVAL
-  });
-
+  }));
 
   function storeImage(jqObj, width, height, zIndex, puid) {
     context.loadedImages.push({
@@ -50,6 +50,7 @@ Chaos.startImageLoader = function() {
     }
   }
 
+
   function renderImages(data) {
     if (data.length == 0) {
       idolCount+=2;
@@ -63,49 +64,65 @@ Chaos.startImageLoader = function() {
     data.reverse();
     var len = data.length;
     var i = 0;
+
     var timer = setInterval(function() {
 
       var url = data[i].uri;
       var puid = data[i].puid;
-      //TODO move to worker
-      if (url.match(/media.tumblr.com/)) {
-        url = url.replace(/(http.*)(500|400)(.jpg|.png)$/, '$1250$3');
-      }
-      if (url.match(/data.tumblr.com/)) {
-        url = url.replace(/(http.*)(1280)(.jpg|.png)(\?AWSAccessKeyId.*)$/, '$1400$3');
-      }
-      if (url.match(/farm5.static.flickr.com/)) {
-        url = url.replace(/(http.*)(_b.jpg|_o.jpg)$/, '$1.jpg');
-      }
 
       var jqObj = $('<img>').attr('src', url);
-      context.textdata.push(url);
       Chaos.image.addUserIcon(puid);
       // Put to the tmp area (invisible) and waiting load the image
       imagePool.prepend(jqObj);
       jqObj.bind('load', function(a) {
         var width = a.target.offsetWidth;
         var height = a.target.offsetHeight;
-        if (height + width > SETTINGS.MAX_IMAGE_SIZE) {
-          jqObj.remove();
-        } else {
-          jqObj.css({ 
-            width : width, 
-            height : height
-          });
-          var posXY = Chaos.effect.getRandomXY(width, height);
-          var zIndex = Chaos.effect.getImageZIndex(width, height);
+        var imageSize = width + height;
 
-          storeImage(jqObj, width, height, zIndex, puid);
-          currentAnim.applyToElm(jqObj, posXY, zIndex, puid, width);
+        if (imageSize > SETTINGS.MAX_IMAGE_SIZE) {
+          // Remove a big image
+          jqObj.remove();
+          return;
         }
+
+        jqObj.css({ 
+          width : width, 
+          height : height
+        });
+        var posXY = Chaos.effect.getRandomXY(width, height);
+        var zIndex = Chaos.effect.getImageZIndex(width, height);
+
+        storeImage(jqObj, width, height, zIndex, puid);
+        currentAnim.applyToElm(jqObj, posXY, zIndex, puid, width);
+
+        // create breaked image
+//        if (context.hametsuMode && 250 < imageSize && imageSize < 800 && i%3 == 0) {
+//          console.info('create breaked image');
+//          var breakImageUrl = 'http://chaos.yuiseki.net/imagine_breaker/' + url;
+//          var breakImg = $('<img>').attr('src', breakImageUrl);
+//          breakImg.css({
+//            width : width,
+//            height : height
+//          });
+//          setTimeout(function() {
+//            console.info('append breaked image');
+//            imagePool.prepend(breakImg);
+//            var posXY2 = Chaos.effect.getRandomXY(width, height);
+//            breakImg.bind('load', function(b) {
+//              console.info('load breaked image');
+//              currentAnim.applyToElm(breakImg, posXY2, zIndex, puid, width);
+//              storeImage(breakImg, width, height, zIndex, puid);
+//            });
+//          }, 3000);
+//        }
+
       });
       if (++i>=len) {
         clearInterval(timer);
         if (currentAnim.roopCount++ > currentAnim.roopLimit) {
           changeAnimation();
         } else {
-          imageLoader.postMessage({eventName:'start'});
+          imageLoader.postMessage(JSON.stringify({eventName:'start'}));
         }
       }
     }, 300);
@@ -126,11 +143,11 @@ Chaos.startImageLoader = function() {
   }
 
   function changeAnimation() {
-    imageLoader.postMessage({eventName:'stop'});
+    imageLoader.postMessage(JSON.stringify({eventName:'stop'}));
     currentAnim.end(function() {
       var next = getNextAnimation();
       next.applyToAll(function() {
-        imageLoader.postMessage({eventName:'start'});
+        imageLoader.postMessage(JSON.stringify({eventName:'start'}));
         currentAnim = next;
       });
     });
@@ -182,32 +199,35 @@ Chaos.animation.DropDown.prototype = {
 
   applyCount : 0,
 
+  getIcon : function(puid, zIndex) {
+    var icon = Chaos.image.getUserIcon(puid);
+    icon.css({
+      'zIndex' : zIndex + 1,
+      'border' : '1px solid #777'
+    });
+    return icon;
+  },
+
   applyToElm : function(jqObj, xy, zIndex, puid) {
     jqObj.css({
       'top' : null,
       'left' : xy.x,
       'zIndex' : zIndex
     });
-    var icon = Chaos.image.getUserIcon(puid);
-    icon.css({
-      'zIndex' : zIndex + 1,
-      'border' : '1px solid #777'
-    });
     if (zIndex > 150) {
-      icon.css({'width' : 20, 'left' : xy.x - 10});
       if (this.applyCount++%3 == 0) {
         this.imageLayerVerySmall.append(jqObj);
-        this.imageLayerVerySmall.append(icon); 
       } else {
         this.imageLayerSmall.append(jqObj)
-        this.imageLayerSmall.append(icon)
       }
     } else
     if (zIndex > 120) {
+      var icon = this.getIcon(puid, zIndex);
       icon.css({'width' : 40, 'left' : xy.x+5, 'margin-top' : 5})
       this.imageLayerMiddle.append(jqObj);
       this.imageLayerMiddle.append(icon);
     } else {
+      var icon = this.getIcon(puid, zIndex);
       icon.css({'width' : 60, 'left' : xy.x+10, 'margin-top':10})
       this.imageLayerLarge.append(jqObj);
       this.imageLayerLarge.append(icon);
@@ -276,17 +296,22 @@ Chaos.animation.Wave.prototype = {
     });
   },
 
+  getIcon : function(puid, zIndex) {
+    var icon = Chaos.image.getUserIcon(puid);
+    icon.css({
+      'zIndex' : zIndex + 1,
+      'border' : '1px solid #777'
+    });
+    return icon;
+  },
+
   applyToElm : function(jqObj, xy, zIndex, puid) {
     jqObj.css({
       'top' : xy.y,
       'left' : xy.x,
       'zIndex' : zIndex
     });
-    var icon = Chaos.image.getUserIcon(puid);
-    icon.css({
-      'zIndex' : zIndex + 1,
-      'border' : '1px solid #777'
-    });
+    var icon = this.getIcon(puid, zIndex);
     if (zIndex > 140) {
       icon.css({'width' : 20, 'left' : xy.x - 10, 'top' : xy.y - 10});
       this.imageLayerSmall.append(jqObj);
@@ -323,6 +348,7 @@ Chaos.animation.Wave.prototype = {
     }).apply(this);
   }
 }
+
 
 Chaos.animation.Tile = function(pool) {
   Chaos.animation.Tile.prototype.initialize.apply(this, [pool]);

@@ -7,7 +7,7 @@ var interval;
 var timer = 0;
 
 onmessage = function(e) {
-  var data = e.data;
+  var data = JSON.parse(e.data);
   if (data.eventName == 'setup') {
     setup(data);
   } else
@@ -16,6 +16,8 @@ onmessage = function(e) {
   } else
   if (data.eventName == 'start') {
     start();
+  } else {
+    postMessage('Invalid event name given');
   }
 }
 
@@ -40,7 +42,7 @@ function start() {
 
 
 function handleLoad(arr) {
-  postMessage(arr);
+  postMessage(JSON.stringify(arr));
   timer = setTimeout(load, interval);
 }
 

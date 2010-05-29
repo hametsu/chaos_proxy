@@ -5,17 +5,17 @@ Chaos.startUserList = function() {
   var animation = new Chaos.animation.UserList();
 
   var loader = new Worker('worker_user_loader.js');
-  loader.onmessage = function() {
+  loader.onmessage = function(event) {
     loader.onmessage = renderUserList;
-    loader.postMessage({eventName : 'start'});
+    loader.postMessage(JSON.stringify({eventName : 'start'}));
   }
-  loader.postMessage({
+  loader.postMessage(JSON.stringify({
     eventName : 'setup',
     interval : SETTINGS.USER_LIST_RETREIVE_INTERVAL
-  });
+  }));
 
   function renderUserList(event) {
-    var dataArr = event.data;
+    var dataArr = JSON.parse(event.data);
     if (dataArr.length == 0) {
       return;
     }
@@ -39,7 +39,7 @@ Chaos.animation.UserList.prototype = {
     this.viewArea.hide();
     this.viewArea.appendTo('#contentArea');
     this.viewTitle = $('<div class="userListTitle">');
-    this.viewTitle.append($('<span>').text('Latest users in Hametsu Lounge...'));
+    this.viewTitle.append($('<span>').text('Latest users in Mogra...'));
     this.viewTitle.hide();
     this.viewTitle.appendTo('#contentArea');
     this.viewTitle.fadeTo('slow', 0.9).show('1000');
