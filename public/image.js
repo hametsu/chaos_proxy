@@ -11,11 +11,16 @@ Chaos.startImageLoader = function() {
 
   // create worker process
   var imageLoader = new Worker('worker_image_loader.js');
-  imageLoader.onmessage = function(d) {
-    imageLoader.onmessage = function(e) {
-      renderImages(JSON.parse(e.data));
+  imageLoader.onmessage = function(event) {
+    var d = JSON.parse(event.data);
+    if (d.eventName == 'setup') {
+      imageLoader.postMessage(JSON.stringify({eventName:'start'}));
+    } else
+    if (d.eventName == 'load') {
+      renderImages(d.data);
+    } else {
+      console.error('invalid event received:' + d.eventName);
     }
-    imageLoader.postMessage(JSON.stringify({eventName:'start'}));
   };
   imageLoader.postMessage(JSON.stringify({
     eventName:'setup', 
@@ -119,7 +124,7 @@ Chaos.startImageLoader = function() {
       });
       if (++i>=len) {
         clearInterval(timer);
-        if (currentAnim.roopCount++ > currentAnim.roopLimit) {
+        if (++currentAnim.roopCount >= currentAnim.roopLimit) {
           changeAnimation();
         } else {
           imageLoader.postMessage(JSON.stringify({eventName:'start'}));
@@ -135,6 +140,9 @@ Chaos.startImageLoader = function() {
     ];
     if (context.enableCSSAnimation) {
       anims.unshift(Chaos.animation.DropDown);
+    }
+    if ($.browser.safari && context.hametsuMode) {
+      anims.unshift(Chaos.animation.Mogra);
     }
     var next = anims[animIndex++ % anims.length];
     var result = new next(imagePool);
@@ -154,7 +162,136 @@ Chaos.startImageLoader = function() {
   }
 }
 
-Chaos.animation.DropDown = function(pool, dataArr) {
+Chaos.animation.Mogra = function(pool) {
+  Chaos.animation.Mogra.prototype.initialize.apply(this, [pool]);
+}
+
+Chaos.animation.Mogra.prototype = {
+  initialize : function(pool) {
+    this.dataArr = context.loadedImages;
+    this.pool = pool;
+    this.contentArea = $('#contentArea');
+  },
+
+  roopCount : 0,
+  roopLimit : 1,
+
+  railNum : 32,
+  // size of center circle
+  centerSize : null,
+  leftP : null,
+  smallRails : null,
+  bigRails : null,
+
+  setup : function() {
+    this.contentArea.addClass('mograBase');
+    this.centerSize = Math.floor(context.screenHeight / 10);
+    this.leftP = Math.floor(context.screenWidth/2) - this.centerSize;
+    this.smallRails = [];
+    this.bigRails = [];
+    for(var i=0; i<this.railNum; i++) {
+      this.createRail(i);
+    }
+  },
+
+  createRail : function(num) {
+    var r = Math.floor(360/this.railNum*num);
+    var offsetL = Math.floor(Math.sin(Math.PI*r/180) * context.screenHeight/3);
+    var offsetT = Math.floor(Math.cos(Math.PI*r/180) * context.screenHeight/3);
+    var rail = $('<div>');
+    rail.css({
+      //'border' : '1px solid #000000',
+      'position' : 'absolute',
+      'left' : this.leftP - offsetL,
+      'width' : this.centerSize,
+      'height' : Math.floor(context.screenHeight/2),
+      'top' : Math.floor(context.screenHeight/4) + offsetT,
+      'z-Index' : 100,
+    });
+    if (num%2==0) {
+      rail.css({
+        '-webkit-transform' : 'rotateZ(' + r + 'deg) rotateX(20deg) translateZ(-50px)',
+        'z-index' : 500
+      });
+      rail.addClass('fast');
+      this.smallRails.push(rail);
+    } else {
+      rail.css({
+        '-webkit-transform' : 'rotateZ(' + r + 'deg) rotateX(5deg) translateZ(-100px)',
+        'z-index' : 400
+      });
+      rail.addClass('slow');
+      this.bigRails.push(rail);
+    }
+    rail.appendTo(this.contentArea);
+  },
+
+  end : function(callback) {
+    this.contentArea.removeClass('mograBase');
+
+    var self = this;
+    $('#contentArea').fadeOut('slow', onsuccess);
+
+    function onsuccess() {
+      $.each(self.dataArr, function(idx, d) {
+        self.pool.append(d.obj);
+      });
+      $('#contentArea > div').remove();
+      $('#contentArea').show();
+      callback();
+    }
+  },
+
+  applyCount : 0,
+
+  getIcon : function(puid, zIndex) {
+    var icon = Chaos.image.getUserIcon(puid);
+    icon.css({
+      'zIndex' : zIndex + 1,
+      'border' : '1px solid #777'
+    });
+    return icon;
+  },
+
+  getRandomRail : function(big) {
+    var rails = big ? this.bigRails : this.smallRails;
+    var idx = Math.floor(Math.random() * rails.length);
+    return rails[idx];
+  },
+
+  applyToElm : function(jqObj, xy, zIndex, puid) {
+    jqObj.css({
+      'top' : null,
+      'left' : this.centerSize/2 - jqObj.width()/2,
+      'zIndex' : zIndex
+    });
+    if (zIndex > 140) {
+      var rail = this.getRandomRail();
+      rail.append(jqObj);
+    } else {
+      var rail = this.getRandomRail(true);
+      rail.append(jqObj);
+    }
+
+  },
+
+  applyToAll : function(callback) {
+    var i = 0;
+    var len = this.dataArr.length;
+    (function() {
+      var d = this.dataArr[i++];
+      var xy = Chaos.effect.getRandomXY(d.width, d.height);
+      this.applyToElm(d.obj, xy, d.zIndex, d.puid); 
+      if (len > i) {
+        setTimeout(lng.bind(arguments.callee, this), 400);
+      } else {
+        callback();
+      }
+    }).apply(this);
+  }
+}
+
+Chaos.animation.DropDown = function(pool) {
   Chaos.animation.DropDown.prototype.initialize.apply(this, [pool]);
 }
 

@@ -58,8 +58,9 @@ Chaos.Loader.prototype = {
           var data = JSON.parse(xhr.responseText);
           callback.call(self, data);
         } else {
-          console.error('Error #getImageFromSameDomain');
-          console.error(xhr.responseText);
+          callback.call(self, []);
+          //console.error('Error #getImageFromSameDomain');
+          //console.error(xhr.responseText);
         }
       }
     };
@@ -84,8 +85,9 @@ Chaos.Loader.prototype = {
           var data = JSON.parse(xhr.responseText);
           callback.call(self, data);
         } else {
-          console.error('Error #getImageFromAnotherDomain');
-          console.error(xhr.responseText);
+          //console.error('Error #getImageFromAnotherDomain');
+          //console.error(xhr.responseText);
+          callback.call(self, []);
         }
       }
     };

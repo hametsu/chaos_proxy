@@ -188,6 +188,7 @@ div#contentArea div.dropDownSlow img{
   -webkit-animation-duration: 10s;
 }
 
+/************** tile animation **************/
 
 @-webkit-keyframes tileshow {
   0% { -webkit-transform: rotateY(0deg);}
@@ -246,6 +247,40 @@ div#contentArea img.show {
 }
 div#contentArea img.delete {
   -webkit-animation-name: deleteImg;
+}
+
+
+/************** mogra animation *************/
+div.mograBase {
+  -webkit-perspective : 50;
+}
+
+@-webkit-keyframes mogra {
+  0% { top : -20%; opacity : 0}
+  10% { top : 8%; opacity : 0.5}
+  20% { top : 36%; opacity : 1}
+  95% { top : 246%: opacity : 1}
+  100% { top : 260%; opacity : 0.5}
+}
+
+div.mograBase div.fast img {
+  position : absolute;
+  top : 260%;
+  opacity : 0;
+  -webkit-animation-timing-function: linear !important;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-name: mogra;
+  -webkit-animation-duration: 4s !important;
+}
+
+div.mograBase div.slow img {
+  position : absolute;
+  top : 260%;
+  opacity : 0;
+  -webkit-animation-timing-function: linear !important;
+  -webkit-animation-iteration-count: 1;
+  -webkit-animation-name: mogra;
+  -webkit-animation-duration: 3s !important;
 }
 
 div#contentArea div.userListTitle {
