@@ -20,7 +20,7 @@ ulimsiz="512m"
 #mhost="remotehost1"
 #mport="1978"
 #rtsfile="$basedir/rts"
-dbname="$basedir/tw_tt.tct#bnum=100000"
+dbname="$basedir/tw_tt.tct#bnum=15000#rcnum=2000"
 maxcon="65535"
 retval=0
 
