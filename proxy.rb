@@ -57,21 +57,9 @@ end
 def logging_image(path, puid)
   rdb = RDBTBL::new
   rdb.open($settings["tokyotyrant"]["host"].to_s, $settings["tokyotyrant"]["port"].to_i)
-  qry = RDBQRY::new(rdb)
-  qry.addcond("uri", RDBQRY::QCSTREQ, path)
-  hit = qry.searchget
-  if hit.size == 0
-    # 初回投入
-    value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "count"=>"1", "puid" =>puid}
-    key = rdb.rnum + 1
-    rdb.put(key, value)
-  else
-    # 既出のURL。カウントアップ
-    count = hit.last.fetch("count", "1").to_i+1
-    value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "count"=>count.to_s, "puid"=>puid}
-    key = rdb.rnum + 1
-    rdb.put(key, value)
-  end
+  value = {"uri" => path, "accessed_at" => Time.now.to_i.to_s, "puid" =>puid}
+  key = rdb.rnum + 1
+  rdb.put(key, value)
   rdb.close
 end
 
@@ -139,6 +127,22 @@ handler = Proc.new() {|req,res|
       res.header.delete("content-encoding")
       res.header.delete("content-length")
     end
+    utf_body = body.toutf8
+    doc = Hpricot(utf_body)
+    twitter_name = doc.search('div.timeline-user').search('b').first.inner_html
+    user_icon = doc.search('img.list-tweet-img').first.attributes['src']
+    unless twitter_name == ""
+      # puidと、twitter_nameとimageを紐付け
+      puts "regist #{puid} as #{twitter_name.red.bold}"
+      puts "profile image is #{user_icon}"
+      regist_twitter(puid, twitter_name, user_icon)
+    end
+
+    # レスポンスのファイナライズ
+    code = Kconv.guess(body)
+    res.body = utf_body.kconv(code, Kconv::UTF8)
+
+
 
   when /\.(jpg|gif|png)/
     unless req.header.has_key?('authorization') or req.header.has_key?('Authorization')
@@ -296,7 +300,7 @@ end
 config = {
   :Port => $settings["proxy"]["port"].to_i,
   :ProxyVia => false,
-  #:ProxyURI => URI.parse('http://localhost:3128/'),
+  :ProxyURI => URI.parse('http://localhost:3128/'),
   :ProxyContentHandler => handler,
   :AccessLog => [['/dev/null', ''],],
   :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL)
