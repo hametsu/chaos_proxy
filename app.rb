@@ -20,7 +20,7 @@ configure do
   set :places, {
                 # 'nanzuka' => 'pl440.nas93g.p-tokyo.nttpc.ne.jp',
                 'nanzuka' => 'pl090.nas93i.p-tokyo.nttpc.ne.jp',
-                'mogra' => '',
+                'mogra' => 'p17107-ipngn2801marunouchi.tokyo.ocn.ne.jp', # 20100529
                 'linuxcafe' => '',
                }
 end
