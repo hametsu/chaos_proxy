@@ -26,7 +26,7 @@ function setup(data) {
   maxRetreiveCount = data.maxRetreiveCount;
   interval = data.interval;
   loader = new Chaos.Loader(imageFilter);
-  postMessage('end setup');
+  postMessage(JSON.stringify({eventName:'setup'}));
 }
 
 function load() {
@@ -47,6 +47,7 @@ function createUri() {
 }
 
 function handleLoad(arr) {
+
   // replace image url to smaller size (flickr, tumblr)
   var result = arr.map(function(d) {
     var url = d.uri;
@@ -62,13 +63,14 @@ function handleLoad(arr) {
     d.uri = url;
     return d;
   });
-  postMessage(JSON.stringify(result));
+  postMessage(JSON.stringify({eventName:'load', data: result}));
 
   if (arr.length == 0) {
     timer = setTimeout(load, interval);
   } else {
     setLatestImageRetreiveTime(arr);
   }
+
 }
 
 function imageFilter(arr) {
