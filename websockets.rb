@@ -1,22 +1,16 @@
 require 'rubygems'
+require 'drb/drb'
 require 'lib/em-websocket'
 
-#EM.kqueue = true
-FILE_NAME = '/tmp/fs/proxy.log'
 @channel = EM::Channel.new
-
+DRb.start_service
+$ts = DRbObject.new_with_uri('druby://:12345')
 Thread.new do
-  last_accessed = Time.now.to_i
-  while true do
-    last_modified = File::mtime(FILE_NAME).to_i
-    if last_modified != last_accessed
-      last_accessed = last_modified
-      File.open(FILE_NAME, 'r'){|f| @channel.push(f.read) }
-    end
-    sleep 0.2
-  end
+loop {
+  hoge = $ts.take(["data", nil])
+  @channel.push hoge[1]
+}
 end
-
 
 
 EventMachine.run do
@@ -34,7 +28,6 @@ EventMachine.run do
     }
   end
 end
-
 
 
 

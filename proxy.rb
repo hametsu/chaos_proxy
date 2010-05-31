@@ -11,6 +11,10 @@ require 'stringio'
 require 'zlib'
 require 'kconv'
 
+require 'drb/drb'
+  DRb.start_service
+  $ts = DRbObject.new_with_uri('druby://:12345')
+
 require 'term/ansicolor'
 class String
     include Term::ANSIColor
@@ -70,10 +74,13 @@ handler = Proc.new() {|req,res|
   path = req.unparsed_uri
   puid = "#{req.peeraddr[2]}:#{req.peeraddr[3]}:#{req.header['x-forwarded-for']}"
   puts Time.now.to_s
+  $ts.write(['data', Time.now.to_s])
+
 
   unless twitter_name = auth_twitter(puid)
     unless $allowed_hosts.include?(req.host)
       puts "#{puid} at #{req.host.red}"
+      $ts.write(['data', "#{puid} at #{req.host}".untaint])
       unless $allowed_ctypes.include?(res.header["content-type"])
         puts "force redirect twitter login page".bold
         res.status = 302
@@ -81,12 +88,11 @@ handler = Proc.new() {|req,res|
       end
     else
       puts "#{puid} as #{'anonymous '.red} at #{req.host.yellow.on_black}"
+      $ts.write(['data', "#{puid} as anonymous at #{req.host}".untaint])
     end
   else
     puts "#{puid} as #{twitter_name.magenta.bold.on_blue} at #{req.host.green.on_black}"
-    foo = File.open("/tmp/fs/proxy.log", 'w')
-    foo.puts "#{puid} as #{twitter_name} at #{req.host}"
-    foo.close
+    $ts.write(['data', "#{puid} as #{twitter_name} at #{req.host}".untaint])
   end
 
   case path
