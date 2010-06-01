@@ -119,7 +119,8 @@ var lng = {
 
   bind : function(fn, thisObj) {
     return function(){
-      fn.apply(thisObj);
+      args = Array.prototype.slice.call(arguments);
+      fn.apply(thisObj, args);
     }
   }
 }

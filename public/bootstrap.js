@@ -89,11 +89,15 @@ Chaos.bootstrap = function() {
     msgs.push(MESSAGES.INIT_SCREEN_FINISH);
 
     Chaos.effect.pourMessages(messageBox, msgs, function() {
+      var ws = new Chaos.WebSocket({
+        url : 'ws://chaos.yuiseki.net:4569/',
+        autoRecovery : true
+      });
       clearMessageArea();
       flashBackimage();
       animateBackground();
       Chaos.startUserList();
-      Chaos.startProxyLog();
+      Chaos.startProxyLog(ws);
       setTimeout(Chaos.startImageLoader, 3000);
     });
   }
