@@ -283,19 +283,21 @@ div.mograBase div.slow img {
   -webkit-animation-duration: 3s !important;
 }
 
+/**************** Userlist ***************/
 div#contentArea div.userListTitle {
   z-index:2000;
   width : 80%;
   height : 40px;
   font-size: 20px;
   color : #FFF;
-  background-color:#333;
+  background-color:rgba(50,50,50,0.8);
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
   top : 2%;
   left : 10%;
 }
+
 div.userListTitle > span {
   margin : 5px;
   display : block;
@@ -303,7 +305,7 @@ div.userListTitle > span {
 
 div#contentArea div.userList {
   z-index:2000;
-  background-color:#333;
+  background-color:rgba(50,50,50,0.8);
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
@@ -314,20 +316,25 @@ div#contentArea div.userList {
   left : 10%;
 }
 
-@-webkit-keyframes scrollUserList {
-  0% { top : 100%; }
-  100% { top : -250%;}
-}
 div.userList table {
   position : absolute;
   top : -250%;
   margin : 30px;
   color : #FFF;
+}
+
+@-webkit-keyframes scrollUserList {
+  0% { top : 100%; }
+  100% { top : -250%;}
+}
+
+div.userList table.animation {
   -webkit-animation-name: scrollUserList;
   -webkit-animation-timing-function: linear;
   -webkit-animation-iteration-count: 1;
   -webkit-animation-duration: 14s;
 }
+
 div.userList td.user_icon {
   padding-right : 10px;
   padding-bottom : 10px;

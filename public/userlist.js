@@ -42,7 +42,7 @@ Chaos.animation.UserList.prototype = {
     this.viewTitle.append($('<span>').text('Latest users in Mogra...'));
     this.viewTitle.hide();
     this.viewTitle.appendTo('#contentArea');
-    this.viewTitle.fadeTo('slow', 0.9).show('1000');
+    this.viewTitle.show('1000');
   },
 
   end : function() {
@@ -79,6 +79,7 @@ Chaos.animation.UserList.prototype = {
     var tableWidth = Math.floor(context.screenWidth * 0.8) - 60;
     var puidWidth = Math.floor((tableWidth - 220)/2);
     var table = $('<table>').width(tableWidth);
+    table.hide();
     if (arr.length % 2 != 0) arr.push({user_icon:"", twitter_name:" "});
     var i=0;
     while (i < arr.length) {
@@ -90,7 +91,11 @@ Chaos.animation.UserList.prototype = {
       )
     }
     this.viewArea.append(table);
-    this.viewArea.fadeTo('slow', 0.9).show(1000, callback);
     this.table = table;
+    this.viewArea.show(1000, function() {
+      table.show();
+      table.addClass('animation');
+      setTimeout(callback, 500);
+    });
   }
 }
