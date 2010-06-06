@@ -1,8 +1,9 @@
 /**
  *
  */
-Chaos.startUserList = function() {
+Chaos.startUserList = function(config) {
   var animation = new Chaos.animation.UserList();
+  var queue = config.queue;
 
   var loader = new Worker('worker_user_loader.js');
   loader.onmessage = function(event) {
@@ -19,9 +20,18 @@ Chaos.startUserList = function() {
     if (dataArr.length == 0) {
       return;
     }
-    animation.setup();
     dataArr = dataArr.slice(0, 16);
-    animation.applyToAll(dataArr, function(){});
+
+    queue.push({
+      fn : function(callback) {
+        animation.setup();
+        animation.applyToAll(dataArr, callback);
+      },
+      callback : function() {
+        animation.end();
+        console.info('end user list!!');
+      }
+    });
   }
 }
 
@@ -68,8 +78,7 @@ Chaos.animation.UserList.prototype = {
         if ( len > i) {
           setTimeout(arguments.callee, 400);
         } else {
-          setTimeout(lng.bind(self.end, self), 2000);
-          callback();
+          setTimeout(callback, 2000);
         }
       })();
     });

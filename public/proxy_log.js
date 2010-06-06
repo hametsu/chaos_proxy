@@ -1,10 +1,10 @@
-Chaos.startProxyLog = function(ws) {
+Chaos.startProxyLog = function(config) {
   var connected = false;
   var logCount = 0;
 
   var targetEl = $('#logScreen');
 
-  ws.on('proxylog', handleReceive);
+  config.socket.on('proxylog', handleReceive);
 
   function handleReceive(data) {
     data = data.split(' ');

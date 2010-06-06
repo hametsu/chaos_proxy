@@ -87,23 +87,33 @@ Chaos.bootstrap = function() {
       msgs.push(MESSAGES.BROWSER_NOTICE);
     } 
     msgs.push(MESSAGES.INIT_SCREEN_FINISH);
-
-    Chaos.effect.pourMessages(messageBox, msgs, function() {
-      var ws = new Chaos.WebSocket({
-        url : 'ws://chaos.yuiseki.net:4569/',
-        autoRecovery : true
-      });
-      clearMessageArea();
-      flashBackimage();
-      animateBackground();
-      Chaos.startUserList();
-      Chaos.startProxyLog(ws);
-      setTimeout(Chaos.startImageLoader, 3000);
-    });
+    Chaos.effect.pourMessages(messageBox, msgs, start);
   }
 
   function onFailure() {
     Chaos.effect.pourMessages(messageBox, [MESSAGES.ERROR, MESSAGES.DETECTED_IE]);
+  }
+
+  function start() {
+    var ws = new Chaos.WebSocket({
+      url : SETTINGS.BENJO_SERVER_WEBSOCKET_URL,
+      autoRecovery : true
+    });
+    var q = new Chaos.Queue({name : 'notification'});
+    clearMessageArea();
+    flashBackimage();
+    animateBackground();
+    Chaos.startUserList({
+      queue : q
+    });
+    Chaos.startProxyLog({
+      socket : ws
+    });
+    Chaos.startCommandReceiver({
+      socket : ws,
+      queue : q
+    });
+    setTimeout(Chaos.startImageLoader, 3000);
   }
 
   function animateBackground() {
