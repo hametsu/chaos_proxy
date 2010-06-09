@@ -8,10 +8,10 @@ DRb.start_service
 $ts = DRbObject.new_with_uri('druby://:12345')
 Thread.new do
 loop {
-  hoge = $ts.take(["data", nil])
+  hoge = $ts.take(["data", nil, nil])
   @channel.push(JSON.dump({
-    'eventName' => 'proxylog',
-    'data' => hoge[1]
+    'eventName' => hoge[1],
+    'data' => hoge[2]
   }))
 }
 end

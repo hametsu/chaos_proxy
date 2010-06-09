@@ -1,7 +1,7 @@
 require "rubygems"
 require 'net/http'
 require 'uri'
-require 'json'
+require 'json/pure'
 require 'drb/drb'
 DRb.start_service
 $ts = DRbObject.new_with_uri('druby://:12345')
@@ -17,10 +17,11 @@ Net::HTTP.start(uri.host, uri.port) do |http|
     raise 'Response is not chuncked' unless response.chunked?
     response.read_body do |chunk|
       # 空行は無視する = JSON形式でのパースに失敗したら次へ
+      #p chunk
       status = JSON.parse(chunk) rescue next
       # 削除通知など、'text'パラメータを含まないものは無視して次へ
-      next unless status['text']
-      $ts.write(['data', "hoge #{status['user']['screen_name']}: #{status['text']}"])
+      #next unless status['text']
+      $ts.write(['data', 'twitterstream', status])
     end
   end
 end
