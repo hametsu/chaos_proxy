@@ -1,5 +1,3 @@
-var socketIsOpen = false;
-
 var ws = new Chaos.WebSocket({
   url : SETTINGS.BENJO_SERVER_WEBSOCKET_URL,
   autoRecovery : true,
@@ -42,11 +40,6 @@ function handleReloadBrowserBtn() {
   });
 }
 
-$(function() {
-  $('#sendMessageBtn').click(handleSendMsgTextBtn);
-  $('#reloadBrowserBtn').click(handleReloadBrowserBtn);
-});
-
 function onReceiveMessage(data, socketKey, pid) {
   if (ws.socketKey == socketKey) {
     alert('Your command is broadcasted');
@@ -55,4 +48,8 @@ function onReceiveMessage(data, socketKey, pid) {
   }
 }
 
+$(function() {
+  $('#sendMessageBtn').click(handleSendMsgTextBtn);
+  $('#reloadBrowserBtn').click(handleReloadBrowserBtn);
+});
 
