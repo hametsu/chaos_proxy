@@ -40,7 +40,10 @@ div#bootMessageArea {
   padding : 20px;
   font-size: 1.5em;
   top : 30px; left : 30px;
-  z-index : 1000
+  z-index : 1000;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }
 
 div#initialMask {
@@ -380,6 +383,33 @@ span.twitterName {
 div#logScreen p.space {
   margin-top:23px;
 }
+
+/******************* notification message *********/
+
+div#contentArea div.notificationMessage {
+  z-index:2000;
+  width : 80%;
+  height : 80%;
+  font-size: 40px;
+  color : #FFF;
+  background-color:rgba(50,50,50,0.9);
+  border-color : #333;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  top : 10%;
+  left : 10%;
+  padding : 20px;
+}
+
+div#contentArea div.notificationMessage img {
+  width : 150px;
+  margin-right:10px;
+  margin-bottom:10px;
+  position : static;
+  float : left;
+}
+
 
 
 /******************* sideMenu **********************/

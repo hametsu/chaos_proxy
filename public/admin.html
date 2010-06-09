@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Chaos Proxy Controller</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <style>
+      input[type=text] {
+        width : 400px;
+      }
+      textarea {
+        width : 400px;
+        height : 100px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Chaos Proxy Viewer Admin Controller</h1>
+    <div id="sendMessage">
+      <h2>メッセージの表示</h2>
+      Icon URL:<br />
+      <input type="text" value="" id="iconUrl" /><br />
+      Message(タグ使えるよ):<br />
+      <textarea id="sendMessageText"></textarea><br />
+      表示時間(ms):<br />
+      <input type="text" value="5000" id="duration" /><br />
+      <input type="button" id="sendMessageBtn" value="Send Message" />
+    </div>
+    <div>
+      <h2>Controll client browsers</h2>
+      <input type="button" id="reloadBrowserBtn" value="Reload Client Browsers" />
+    </div>
+
+    <script type="text/javascript" src='lib/websocket/swfobject.js'></script>
+    <script type="text/javascript" src='lib/websocket/FABridge.js'></script>
+    <script type="text/javascript" src='lib/websocket/web_socket.js'></script>
+
+    <script type="text/javascript" src="./chaos.js?10"></script>
+    <script type="text/javascript" src="./websocket.js?10"></script>
+    <script type="text/javascript" src="./admin.js?10"></script>
+  </body>
+</html>

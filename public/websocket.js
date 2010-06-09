@@ -8,9 +8,11 @@
  *   "data" : {
  *     "lastRetreiveTime" : "1171815102"
  *   },
- *   "pid" : 0
+ *   "pid" : 0,
+ *   "socketKey" : "8GzBJq42m9"
  * }
  * </code>
+ * pid is sequencial number for this instance. socketKey is a random string to identify this socket.
  *
  * And receive data format is
  * <code>
@@ -60,6 +62,7 @@ Chaos.WebSocket = function(config) {
 Chaos.WebSocket.prototype = {
   events : null,
   pid : 0,
+  socketKey : null,
 
   /**
    * @constructor
@@ -86,7 +89,17 @@ Chaos.WebSocket.prototype = {
         }
       }
     }
+    this.socketKey = this._createKey();
     this._open();
+  },
+
+  _createKey : function() {
+    var result = '';
+    var source = 'abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (var i=0; i<10; i++) {
+      result+=source[Math.floor(Math.random()*source.length)];
+    }
+    return result;
   },
 
   /**
@@ -121,7 +134,7 @@ Chaos.WebSocket.prototype = {
       var d = JSON.parse(event.data);
       var eventName = d.eventName.toLowerCase();
       console.info('Data receive !!:' + eventName);
-      this._fire(eventName, d);
+      this._fire(eventName, d, d.socketKey, d.pid);
     } catch(e) {
       console.error(e);
     }
@@ -130,12 +143,12 @@ Chaos.WebSocket.prototype = {
   /**
    * @private
    */
-  _fire : function(eventName, data) {
+  _fire : function(eventName, data, socketKey, pid) {
     data = data || {};
     var fns = this.events[eventName];
     if (fns) {
       $.each(fns, function(idx, f) {
-        f.fn.call(f.scope, data.data, data.pid); 
+        f.fn.call(f.scope, data.data, socketKey, pid); 
       });
     }
   },
@@ -148,7 +161,7 @@ Chaos.WebSocket.prototype = {
     this._fire('close');
     if (this.autoRecovery) {
       // retry after 10 seconds
-      setTimeout(lng.bind(this.open, this), 10000);
+      setTimeout(lng.bind(this._open, this), 10000);
     }
   },
   
@@ -161,7 +174,8 @@ Chaos.WebSocket.prototype = {
     this.ws.send(JSON.stringify({
       eventName : eventName,
       data : data,
-      pid : this.pid++
+      pid : this.pid++,
+      socketKey : this.socketKey
     }));
   },
 
