@@ -22,9 +22,8 @@ EventMachine.run do
     ws.onopen {
       sid = @channel.subscribe { |msg| ws.send msg }
       ws.onmessage { |msg|
-        # TODO parse msg to JSON
-        # var data = JSON.parse(msg)
-        puts 'onmessage'
+        # TODO check sequrity token and send only valid message
+        @channel.push(msg)
       }
       ws.onclose {
         @channel.unsubscribe(sid)

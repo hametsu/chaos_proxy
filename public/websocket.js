@@ -8,9 +8,11 @@
  *   "data" : {
  *     "lastRetreiveTime" : "1171815102"
  *   },
- *   "pid" : 0
+ *   "pid" : 0,
+ *   "socketKey" : "8GzBJq42m9"
  * }
  * </code>
+ * pid is sequencial number for this instance. socketKey is a random string to identify this socket.
  *
  * And receive data format is
  * <code>
@@ -26,7 +28,13 @@
  *
  * Usage:
  * <code>
- * var ws = new Chaos.WebSocket({url:"localhost:8080"});
+ * var ws = new Chaos.WebSocket({
+ *   url:"localhost:8080",
+ *   listeners : {
+ *     open : function(){console.info('onopen!!')},
+ *     close : function(){console.info('onclose!!')}
+ *   }
+ * });
  * // wait push event from server
  * ws.on('newUser', function(data) {
  *   console.dir(data);
@@ -54,6 +62,7 @@ Chaos.WebSocket = function(config) {
 Chaos.WebSocket.prototype = {
   events : null,
   pid : 0,
+  socketKey : null,
 
   /**
    * @constructor
@@ -70,19 +79,39 @@ Chaos.WebSocket.prototype = {
     this.events = {};
     this.autoRecovery = config.autoRecovery || false;
     this.config = config;
-    this.open();
+    if (config.listeners) {
+      var listeners = config.listeners;
+      for (action in listeners) {
+        if (typeof(listeners[action]) == 'function' || listeners[action] instanceof Function){
+          this.on(action, listeners[action]);
+        } else {
+          this.on(action, listeners[action].fn, listeners[action].scope);
+        }
+      }
+    }
+    this.socketKey = this._createKey();
+    this._open();
+  },
+
+  _createKey : function() {
+    var result = '';
+    var source = 'abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    for (var i=0; i<10; i++) {
+      result+=source[Math.floor(Math.random()*source.length)];
+    }
+    return result;
   },
 
   /**
    * @private
    */
-  open : function() {
+  _open : function() {
     try {
       console.info('start open:' + this.config.url);
       this.ws = new WebSocket(this.config.url);
-      this.ws.onopen = lng.bind(this.onopen, this);
-      this.ws.onmessage = lng.bind(this.onmessage, this);
-      this.ws.onclose = lng.bind(this.onclose, this);
+      this.ws.onopen = lng.bind(this._onopen, this);
+      this.ws.onmessage = lng.bind(this._onmessage, this);
+      this.ws.onclose = lng.bind(this._onclose, this);
     } catch (e) {
       console.error('Failed to open the websocket connection');
       console.error(e);
@@ -92,24 +121,20 @@ Chaos.WebSocket.prototype = {
   /**
    * @private
    */
-  onopen : function() {
+  _onopen : function() {
     this.alive = true;
-    console.info('open websocket');
+    this._fire('open');
   },
 
   /**
    * @private
    */
-  onmessage : function(event) {
+  _onmessage : function(event) {
     try {
       var d = JSON.parse(event.data);
       var eventName = d.eventName.toLowerCase();
-      var fns = this.events[eventName];
-      if (fns) {
-        $.each(fns, function(idx, f) {
-          f.fn.call(f.scope, d.data, d.pid); 
-        });
-      }
+      console.info('Data receive !!:' + eventName);
+      this._fire(eventName, d, d.socketKey, d.pid);
     } catch(e) {
       console.error(e);
     }
@@ -118,11 +143,25 @@ Chaos.WebSocket.prototype = {
   /**
    * @private
    */
-  onclose : function() {
+  _fire : function(eventName, data, socketKey, pid) {
+    data = data || {};
+    var fns = this.events[eventName];
+    if (fns) {
+      $.each(fns, function(idx, f) {
+        f.fn.call(f.scope, data.data, socketKey, pid); 
+      });
+    }
+  },
+
+  /**
+   * @private
+   */
+  _onclose : function() {
     this.alive = false;
+    this._fire('close');
     if (this.autoRecovery) {
       // retry after 10 seconds
-      setTimeout(lng.bind(this.open, this), 10000);
+      setTimeout(lng.bind(this._open, this), 10000);
     }
   },
   
@@ -135,7 +174,8 @@ Chaos.WebSocket.prototype = {
     this.ws.send(JSON.stringify({
       eventName : eventName,
       data : data,
-      pid : this.pid++
+      pid : this.pid++,
+      socketKey : this.socketKey
     }));
   },
 
