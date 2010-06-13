@@ -17,10 +17,12 @@ Chaos.startCommandReceiver = function(config) {
 Chaos.commandReceivers = {};
 Chaos.commandReceivers['showMessage'] = (function() {
 
+  var elm = $('#mainmessage');
+
   var show = function(data, callback) {
     var vArea = $('<div class="notificationMessage">');
     vArea.hide();
-    vArea.appendTo('#contentArea');
+    vArea.appendTo(elm);
     vArea.html(data.message);
     if (data.iconUrl.length > 0) {
       vArea.prepend($('<img>').attr('src', data.iconUrl));

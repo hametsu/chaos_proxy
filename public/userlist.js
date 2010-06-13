@@ -40,18 +40,20 @@ Chaos.animation.UserList = function() {
 }
 
 Chaos.animation.UserList.prototype = {
+
   initialize : function() {
     this.pool = $('#userIconPool');
+    this.elm = $('#mainmessage');
   },
 
   setup : function() {
     this.viewArea = $('<div class="userList">');
     this.viewArea.hide();
-    this.viewArea.appendTo('#contentArea');
+    this.viewArea.appendTo(this.elm);
     this.viewTitle = $('<div class="userListTitle">');
     this.viewTitle.append($('<span>').text('Latest users in Mogra...'));
     this.viewTitle.hide();
-    this.viewTitle.appendTo('#contentArea');
+    this.viewTitle.appendTo(this.elm);
     this.viewTitle.show('1000');
   },
 

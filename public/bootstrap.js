@@ -31,14 +31,15 @@ Chaos.bootstrap = function() {
       'height' : context.screenHeight,
       'width' :  context.screenWidth
     });
-    $('#dummy').css({
-      'height' : context.screenHeight
-    });
     $('#background').css({
       'height' : context.screenHeight + 50,
       'width' :  context.screenWidth + 50
     });
     $('#contentArea').css({
+      'height' : context.screenHeight,
+      'width' :  context.screenWidth
+    });
+    $('#mainmessage').css({
       'height' : context.screenHeight,
       'width' :  context.screenWidth
     });
