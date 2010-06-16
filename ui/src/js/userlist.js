@@ -5,7 +5,7 @@ Chaos.startUserList = function(config) {
   var animation = new Chaos.animation.UserList();
   var queue = config.queue;
 
-  var loader = new Worker('worker_user_loader.js');
+  var loader = new Worker('js/worker_user_loader.js');
   loader.onmessage = function(event) {
     loader.onmessage = renderUserList;
     loader.postMessage(JSON.stringify({eventName : 'start'}));

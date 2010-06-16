@@ -10,7 +10,7 @@ Chaos.startImageLoader = function() {
   var currentAnim = getNextAnimation(imagePool);
 
   // create worker process
-  var imageLoader = new Worker('worker_image_loader.js');
+  var imageLoader = new Worker('js/worker_image_loader.js');
   imageLoader.onmessage = function(event) {
     var d = JSON.parse(event.data);
     if (d.eventName == 'setup') {

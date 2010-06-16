@@ -1,0 +1,73 @@
+# project files
+VIEWER_FILE_TEMPLATE_NAME = "viewer.js.template"
+VIEWER_FILE_NAME        = "viewer.js"
+VIEWER_FILE_MIN_NAME    = "viewer-min.js"
+ADMIN_FILE_TEMPLATE_NAME  = "admin_controller.js.template"
+ADMIN_FILE_NAME         = "admin_controller.js"
+CSS_FILE_NAME           = "chaos.css"
+
+# common settings
+UI_ROOT = File.expand_path(File.dirname(__FILE__))
+PROJECT_ROOT = File.expand_path(File.dirname(__FILE__)) + "/../"
+
+require 'rubygems'
+begin
+  require 'rake'
+rescue LoadError
+  puts 'This script should only be accessed via the "rake" command.'
+  puts 'Installation: gem install rake -y'
+  exit
+end
+
+$:.unshift File.join(UI_ROOT, 'lib')
+
+require 'rake'
+require 'rake/clean'
+require 'rake/packagetask'
+
+YUI_COMPRESSOR_LIB = "./lib/yuicompressor-2.3.6.jar"
+
+APP_SRC_DIR  = File.join(UI_ROOT, 'src')
+APP_DIST_DIR = File.join(UI_ROOT, 'build')
+APP_DEPLOY_DIR = File.join(PROJECT_ROOT, 'public')
+
+desc "Builds the distribution"
+task :default do
+  require 'protodoc'
+  require 'fileutils'
+
+  Dir.chdir(File.join(APP_SRC_DIR, 'js')) do
+    File.open(File.join(APP_DIST_DIR, VIEWER_FILE_NAME), 'w+') do |dist|
+      dist << Protodoc::Preprocessor.new(VIEWER_FILE_TEMPLATE_NAME)
+    end
+    
+    File.open(File.join(APP_DIST_DIR, ADMIN_FILE_NAME), 'w+') do |dist|
+      dist << Protodoc::Preprocessor.new(ADMIN_FILE_TEMPLATE_NAME)
+    end
+    FileUtils.copy_file 'loader.js', File.join(APP_DIST_DIR, 'loader.js')
+    FileUtils.copy_file 'worker_image_loader.js', File.join(APP_DIST_DIR, 'worker_image_loader.js')
+    FileUtils.copy_file 'worker_user_loader.js', File.join(APP_DIST_DIR, 'worker_user_loader.js')
+  end
+
+  Dir.chdir(File.join(APP_SRC_DIR, 'css')) do
+    FileUtils.copy_file CSS_FILE_NAME, File.join(APP_DIST_DIR, CSS_FILE_NAME)
+  end
+end
+
+desc "Deploy to uncompressed files to public directory"
+task :debug => :default do
+  Dir.chdir(APP_DIST_DIR) do
+    FileUtils.copy_file CSS_FILE_NAME, File.join(APP_DEPLOY_DIR, 'css', CSS_FILE_NAME)
+    FileUtils.copy_file VIEWER_FILE_NAME, File.join(APP_DEPLOY_DIR, 'js', VIEWER_FILE_NAME)
+    FileUtils.copy_file ADMIN_FILE_NAME, File.join(APP_DEPLOY_DIR, 'js', ADMIN_FILE_NAME)
+    FileUtils.copy_file 'loader.js', File.join(APP_DEPLOY_DIR, 'js', 'loader.js')
+    FileUtils.copy_file 'worker_image_loader.js', File.join(APP_DEPLOY_DIR, 'js', 'worker_image_loader.js')
+    FileUtils.copy_file 'worker_user_loader.js', File.join(APP_DEPLOY_DIR, 'js', 'worker_user_loader.js')
+  end
+end
+
+task :compress => :default do
+end
+
+task :publish => :compress do
+end

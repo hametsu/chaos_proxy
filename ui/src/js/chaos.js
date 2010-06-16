@@ -35,7 +35,7 @@ var context = {
 /**
  * Name space for functions
  */
-var Chaos = {}; 
+var Chaos = window.Chaos || {}; 
 Chaos.animation = {};
 
 /**********************************************/
