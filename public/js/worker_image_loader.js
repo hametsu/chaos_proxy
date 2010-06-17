@@ -1,8 +1,7 @@
 var Chaos = {};
 var REGEXP_FILTER_IMAGE_URL = /(chaos\.yuiseki\.net)|(www\.google-analytics\.com\/__utm\.gif)/;
 
-//importScripts('lib/json2.js', 'js/loader.js');
-importScripts('loader.js');
+importScripts('../lib/json2.js', 'loader.js');
 
 var loader;
 var maxRetreiveCount;

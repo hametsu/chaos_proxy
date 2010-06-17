@@ -278,6 +278,10 @@ Chaos.animation.Mogra.prototype = {
   applyToAll : function(callback) {
     var i = 0;
     var len = this.dataArr.length;
+    if (len == 0) {
+      callback();
+      return;
+    }
     (function() {
       var d = this.dataArr[i++];
       var xy = Chaos.effect.getRandomXY(d.width, d.height);
@@ -375,6 +379,10 @@ Chaos.animation.DropDown.prototype = {
   applyToAll : function(callback) {
     var i = 0;
     var len = this.dataArr.length;
+    if (len == 0) {
+      callback();
+      return;
+    }
     (function() {
       var d = this.dataArr[i++];
       var xy = Chaos.effect.getRandomXY(d.width, d.height);
@@ -473,6 +481,10 @@ Chaos.animation.Wave.prototype = {
   applyToAll : function(callback) {
     var i = 0;
     var len = this.dataArr.length;
+    if (len == 0) {
+      callback();
+      return;
+    }
     (function() {
       var d = this.dataArr[i++];
       var xy = Chaos.effect.getRandomXY(d.width, d.height);
@@ -532,6 +544,10 @@ Chaos.animation.Tile.prototype = {
   applyToAll : function(callback) {
     var i = 0;
     var len = this.dataArr.length;
+    if (len == 0) {
+      callback();
+      return;
+    }
     (function() {
       var d = this.dataArr[i++];
       this.applyToElm(d.obj, null, null, d.puid); 
