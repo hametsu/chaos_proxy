@@ -154,6 +154,7 @@ handler = Proc.new() {|req,res|
 
   when /\.(jpg|gif|png)/
     unless req.header.has_key?('authorization') or req.header.has_key?('Authorization')
+      # req.header['referer'] = path
       logging_image(path, puid)
     end
   end
