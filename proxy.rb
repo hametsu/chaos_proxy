@@ -308,7 +308,7 @@ end
 config = {
   :Port => $settings["proxy"]["port"].to_i,
   :ProxyVia => false,
-  :ProxyURI => URI.parse('http://localhost:3128/'),
+  #:ProxyURI => URI.parse('http://localhost:3128/'),
   :ProxyContentHandler => handler,
   :AccessLog => [['/dev/null', ''],],
   :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL)
