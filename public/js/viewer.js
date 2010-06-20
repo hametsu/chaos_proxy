@@ -1040,6 +1040,9 @@ Chaos.startUserList = function(config) {
   loader.onmessage = function(event) {
     loader.onmessage = renderUserList;
     loader.postMessage(JSON.stringify({eventName : 'start'}));
+    setInterval(function() {
+      loader.postMessage(JSON.stringify({eventName : 'start'}));
+    }, 1000*60*5);
   }
   loader.postMessage(JSON.stringify({
     eventName : 'setup',
