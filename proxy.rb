@@ -156,6 +156,10 @@ handler = Proc.new() {|req,res|
     unless req.header.has_key?('authorization') or req.header.has_key?('Authorization')
       logging_image(path, puid)
     end
+
+  when /^https?:\/\/[^\.]*\.pixiv\.net\//
+    req.header['referer'] = 'http://pixiv.net/'
+
   end
 =begin
   foo = File.open("tmp/proxy.log", 'a')
@@ -308,7 +312,7 @@ end
 config = {
   :Port => $settings["proxy"]["port"].to_i,
   :ProxyVia => false,
-  :ProxyURI => URI.parse('http://localhost:3128/'),
+  #:ProxyURI => URI.parse('http://localhost:3128/'),
   :ProxyContentHandler => handler,
   :AccessLog => [['/dev/null', ''],],
   :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL)
