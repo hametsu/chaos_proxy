@@ -4,6 +4,7 @@ VIEWER_FILE_NAME        = "viewer.js"
 VIEWER_FILE_MIN_NAME    = "viewer-min.js"
 ADMIN_FILE_TEMPLATE_NAME  = "admin_controller.js.template"
 ADMIN_FILE_NAME         = "admin_controller.js"
+INCLUDE_FILE_NAME         = "include.js"
 CSS_FILE_NAME           = "chaos.css"
 
 # common settings
@@ -47,6 +48,7 @@ task :default do
     FileUtils.copy_file 'loader.js', File.join(APP_DIST_DIR, 'loader.js')
     FileUtils.copy_file 'worker_image_loader.js', File.join(APP_DIST_DIR, 'worker_image_loader.js')
     FileUtils.copy_file 'worker_user_loader.js', File.join(APP_DIST_DIR, 'worker_user_loader.js')
+    FileUtils.copy_file INCLUDE_FILE_NAME, File.join(APP_DIST_DIR, INCLUDE_FILE_NAME)
   end
 
   Dir.chdir(File.join(APP_SRC_DIR, 'css')) do
@@ -63,6 +65,7 @@ task :debug => :default do
     FileUtils.copy_file 'loader.js', File.join(APP_DEPLOY_DIR, 'js', 'loader.js')
     FileUtils.copy_file 'worker_image_loader.js', File.join(APP_DEPLOY_DIR, 'js', 'worker_image_loader.js')
     FileUtils.copy_file 'worker_user_loader.js', File.join(APP_DEPLOY_DIR, 'js', 'worker_user_loader.js')
+    FileUtils.copy_file INCLUDE_FILE_NAME, File.join(APP_DEPLOY_DIR, 'js', INCLUDE_FILE_NAME)
   end
 end
 

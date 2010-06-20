@@ -1,7 +1,3 @@
-$(function() {
-  Chaos.bootstrap();
-});
-
 /**
  * Bootstrap of this Application
  */
@@ -146,4 +142,8 @@ Chaos.bootstrap = function() {
     messageBox.fadeOut(1000);
   }
 }
+
+$(function() {
+  Chaos.bootstrap();
+});
 
