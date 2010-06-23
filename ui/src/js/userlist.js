@@ -7,16 +7,35 @@ Chaos.startUserList = function(config) {
 
   var loader = new Worker('js/worker_user_loader.js');
   loader.onmessage = function(event) {
-    loader.onmessage = renderUserList;
-    loader.postMessage(JSON.stringify({eventName : 'start'}));
+    var d = JSON.parse(event.data);
+    if (d.eventName == 'setup') {
+      loader.postMessage(JSON.stringify({eventName : 'start'}));
+    } else
+    if (d.eventName == 'load') {
+      renderUserList(d.data, function() {
+        loader.postMessage(JSON.stringify({
+          eventName : 'start',
+          defer : true
+        }));
+      });
+    } else
+    if (d.eventName == 'log') {
+      console.info(d.message);
+    }
+  }
+  loader.onerror = function(e) {
+    console.info('onerror!!');
+    console.dir(e);
   }
   loader.postMessage(JSON.stringify({
     eventName : 'setup',
     interval : SETTINGS.USER_LIST_RETREIVE_INTERVAL
   }));
 
-  function renderUserList(event) {
-    var dataArr = JSON.parse(event.data);
+  // save reference to worker object
+  context.workers.push(loader);
+
+  function renderUserList(dataArr, callback) {
     if (dataArr.length == 0) {
       return;
     }
@@ -29,7 +48,8 @@ Chaos.startUserList = function(config) {
       },
       callback : function() {
         animation.end();
-        console.info('end user list!!');
+        callback();
+        console.info('end user list!!:' +new Date());
       }
     });
   }
@@ -51,7 +71,7 @@ Chaos.animation.UserList.prototype = {
     this.viewArea.hide();
     this.viewArea.appendTo(this.elm);
     this.viewTitle = $('<div class="userListTitle">');
-    this.viewTitle.append($('<span>').text('Latest users in Mogra...'));
+    this.viewTitle.append($('<span>').text('Artists of HAMETSU Lounge'));
     this.viewTitle.hide();
     this.viewTitle.appendTo(this.elm);
     this.viewTitle.show('1000');

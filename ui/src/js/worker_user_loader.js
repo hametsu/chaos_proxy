@@ -15,7 +15,10 @@ onmessage = function(e) {
     stop();
   } else
   if (data.eventName == 'start') {
-    start();
+    start(data.defer);
+  } else
+  if (data.eventName == 'ping') {
+    log('ping:' + new Date());
   } else {
     postMessage('Invalid event name given');
   }
@@ -24,7 +27,9 @@ onmessage = function(e) {
 function setup(data) {
   interval = data.interval;
   loader = new Chaos.Loader();
-  postMessage('end setup');
+  postMessage(JSON.stringify({
+    eventName : 'setup'
+  }));
 }
 
 function load() {
@@ -35,14 +40,28 @@ function stop() {
   clearInterval(timer);
 }
 
-function start() {
+function start(defer) {
   clearInterval(timer);
-  load();
+  if (defer) {
+    timer = setTimeout(load, interval);
+  } else {
+    load();
+  }
 }
 
 
 function handleLoad(arr) {
-  postMessage(JSON.stringify(arr));
-  timer = setTimeout(load, interval);
+  postMessage(JSON.stringify({
+    eventName : 'load',
+    data : arr
+  }));
+}
+
+function log(msg, d) {
+  postMessage(JSON.stringify({
+    eventName : 'log',
+    data : d,
+    message : msg
+  }));
 }
 

@@ -29,7 +29,8 @@ var context = {
   screenWidth : 0,
   loadedImages : [],
   userIcons : {},
-  lastRetreiveTime : "1171815102" // An enough old time for first time
+  lastRetreiveTime : "1171815102", // An enough old time for first time
+  workers : []
 } 
 
 /**

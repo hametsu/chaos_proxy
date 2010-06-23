@@ -28,6 +28,8 @@ Chaos.startImageLoader = function() {
     interval : SETTINGS.IMAGE_RETREIVE_INTERVAL
   }));
 
+  context.workers.push(imageLoader);
+
   function storeImage(jqObj, width, height, zIndex, puid) {
     context.loadedImages.push({
       obj : jqObj,

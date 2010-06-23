@@ -37,7 +37,8 @@ var context = {
   screenWidth : 0,
   loadedImages : [],
   userIcons : {},
-  lastRetreiveTime : "1171815102" // An enough old time for first time
+  lastRetreiveTime : "1171815102", // An enough old time for first time
+  workers : []
 }
 
 /**
@@ -373,7 +374,7 @@ Chaos.WebSocket.prototype = {
     try {
       var d = JSON.parse(event.data);
       var eventName = d.eventName.toLowerCase();
-      console.info('Data receive !!:' + eventName);
+      //console.info('Data receive !!:' + eventName);
       this._fire(eventName, d, d.socketKey, d.pid);
     } catch(e) {
       console.error(e);
@@ -494,6 +495,8 @@ Chaos.startImageLoader = function() {
     maxRetreiveCount : SETTINGS.MAX_RETREIVE_COUNT,
     interval : SETTINGS.IMAGE_RETREIVE_INTERVAL
   }));
+
+  context.workers.push(imageLoader);
 
   function storeImage(jqObj, width, height, zIndex, puid) {
     context.loadedImages.push({
@@ -1038,16 +1041,35 @@ Chaos.startUserList = function(config) {
 
   var loader = new Worker('js/worker_user_loader.js');
   loader.onmessage = function(event) {
-    loader.onmessage = renderUserList;
-    loader.postMessage(JSON.stringify({eventName : 'start'}));
+    var d = JSON.parse(event.data);
+    if (d.eventName == 'setup') {
+      loader.postMessage(JSON.stringify({eventName : 'start'}));
+    } else
+    if (d.eventName == 'load') {
+      renderUserList(d.data, function() {
+        loader.postMessage(JSON.stringify({
+          eventName : 'start',
+          defer : true
+        }));
+      });
+    } else
+    if (d.eventName == 'log') {
+      console.info(d.message);
+    }
+  }
+  loader.onerror = function(e) {
+    console.info('onerror!!');
+    console.dir(e);
   }
   loader.postMessage(JSON.stringify({
     eventName : 'setup',
     interval : SETTINGS.USER_LIST_RETREIVE_INTERVAL
   }));
 
-  function renderUserList(event) {
-    var dataArr = JSON.parse(event.data);
+  // save reference to worker object
+  context.workers.push(loader);
+
+  function renderUserList(dataArr, callback) {
     if (dataArr.length == 0) {
       return;
     }
@@ -1060,7 +1082,8 @@ Chaos.startUserList = function(config) {
       },
       callback : function() {
         animation.end();
-        console.info('end user list!!');
+        callback();
+        console.info('end user list!!:' +new Date());
       }
     });
   }
@@ -1082,7 +1105,7 @@ Chaos.animation.UserList.prototype = {
     this.viewArea.hide();
     this.viewArea.appendTo(this.elm);
     this.viewTitle = $('<div class="userListTitle">');
-    this.viewTitle.append($('<span>').text('Latest users in Mogra...'));
+    this.viewTitle.append($('<span>').text('Artists of HAMETSU Lounge'));
     this.viewTitle.hide();
     this.viewTitle.appendTo(this.elm);
     this.viewTitle.show('1000');

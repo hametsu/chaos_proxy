@@ -37,7 +37,8 @@ var context = {
   screenWidth : 0,
   loadedImages : [],
   userIcons : {},
-  lastRetreiveTime : "1171815102" // An enough old time for first time
+  lastRetreiveTime : "1171815102", // An enough old time for first time
+  workers : []
 }
 
 /**
@@ -373,7 +374,7 @@ Chaos.WebSocket.prototype = {
     try {
       var d = JSON.parse(event.data);
       var eventName = d.eventName.toLowerCase();
-      console.info('Data receive !!:' + eventName);
+      //console.info('Data receive !!:' + eventName);
       this._fire(eventName, d, d.socketKey, d.pid);
     } catch(e) {
       console.error(e);
