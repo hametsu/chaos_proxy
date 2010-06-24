@@ -75,8 +75,8 @@ handler = Proc.new() {|req,res|
   puts ''
   path = req.unparsed_uri
   puid = "#{req.peeraddr[2]}:#{req.peeraddr[3]}:#{req.header['x-forwarded-for']}"
-  puts Time.now.to_s
-  $ts.write(['data', 'timestamp', Time.now.to_s])
+  #puts Time.now.to_s
+  #$ts.write(['data', 'timestamp', Time.now.to_s])
 
 
   unless twitter_name = auth_twitter(puid)
