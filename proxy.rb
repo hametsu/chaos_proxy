@@ -315,7 +315,8 @@ config = {
   #:ProxyURI => URI.parse('http://localhost:3128/'),
   :ProxyContentHandler => handler,
   :AccessLog => [['/dev/null', ''],],
-  :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL)
+  :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL),
+  :DoNotReverseLookup => true,
 }
 
 stream_proxy = WEBrick::StreamProxy.new(config)
