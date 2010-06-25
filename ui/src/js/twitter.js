@@ -102,7 +102,7 @@ Chaos.TwitterCrawler = (function() {
   var timer = null;
   var interval = 30*1000;
   var sinceId = 0;
-  var rpp = 20;
+  var rpp = 10;
 
   var createQuery = function(word) {
     var w = encodeURIComponent(word);
@@ -130,7 +130,7 @@ Chaos.TwitterCrawler = (function() {
 
       var fn =  lng.bind(this.getSearchResults, this);
       fn(word, callback);
-      timer = setInterval(fn, interval);
+      timer = setInterval(function(){fn(word, callback)}, interval);
     },
 
     stop : function() {
