@@ -399,7 +399,41 @@ div#mainmessage div.notificationMessage img {
   float : left;
 }
 
-/*********** proxy log screen ****/
+/*********** tweets ******************************/
+div#mainmessage div.tweets {
+  width : 90%;
+  left : 5%;
+}
+
+div.tweet {
+  color : #FFF;
+  background-color:rgba(50,50,50,0.85);
+  border-color : #333;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  top : 10%;
+  left : 10%;
+  padding : 20px;
+  margin : 20px;
+}
+
+div.tweet div.body {
+  float : left;
+}
+div.tweet div.text {
+  font-size:1.5em;
+}
+
+div.tweet img {
+  display : block;
+  float : left;
+  margin : 0 20px 0 0;
+  width : 100px;
+  max-height : 200px;
+}
+
+/*********** proxy log screen ********************/
 
 div#logScreen {
   position : absolute;

@@ -15,7 +15,8 @@ var SETTINGS = {
   FLASH_EFFECT_INTERVAL : 13000,
   MESSAGE_SPEED : 40,
   MAX_IMAGE_SIZE : 1300,
-  BENJO_SERVER_WEBSOCKET_URL : 'ws://chaos.yuiseki.net:4569/'
+  BENJO_SERVER_WEBSOCKET_URL : 'ws://chaos.yuiseki.net:4569/',
+  TWITTER_SEARCH_KEYWORD : '#ts6'
 }
 
 var MESSAGES = {
@@ -215,25 +216,6 @@ Chaos.Queue.prototype = {
     } else {
       this.running = false;
     }
-  }
-}
-
-
-/**
- * For common utilities
- */
-var lng = {
-  emptyFn : function(){},
-
-  bind : function(fn, thisObj) {
-    return function(){
-      args = Array.prototype.slice.call(arguments);
-      fn.apply(thisObj, args);
-    }
-  },
-
-  isFunction : function(f) {
-    return typeof(f) == 'function' || f instanceof Function;
   }
 }
 
