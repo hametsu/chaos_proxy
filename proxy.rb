@@ -74,7 +74,8 @@ end
 handler = Proc.new() {|req,res|
   puts ''
   path = req.unparsed_uri
-  puid = "#{req.peeraddr[2]}:#{req.peeraddr[3]}:#{req.header['x-forwarded-for']}"
+  puid = "#{req.peeraddr[3]}:#{req.header['x-forwarded-for']}"
+  #puid = "#{req.peeraddr[2]}:#{req.peeraddr[3]}:#{req.header['x-forwarded-for']}"
   #puts Time.now.to_s
   #$ts.write(['data', 'timestamp', Time.now.to_s])
 
@@ -256,8 +257,8 @@ module WEBrick
         http.start{
           if @config[:ProxyTimeout]
             ##################################   these issues are
-            http.open_timeout = 30   # secs  #   necessary (maybe bacause
-            http.read_timeout = 60   # secs  #   Ruby's bug, but why?)
+            http.open_timeout = 3   # secs  #   necessary (maybe bacause
+            http.read_timeout = 6   # secs  #   Ruby's bug, but why?)
             ##################################
           end
         case req.request_method
@@ -307,18 +308,18 @@ end
 
 
 
-
-
 config = {
+  # ip
+  :DoNotReverseLookup => true,
   :Port => $settings["proxy"]["port"].to_i,
   :ProxyVia => false,
   #:ProxyURI => URI.parse('http://localhost:3128/'),
   :ProxyContentHandler => handler,
   :AccessLog => [['/dev/null', ''],],
-  :Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL),
-  :DoNotReverseLookup => true,
+  #:Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL),
 }
 
+#stream_proxy = WEBrick::HTTPProxyServer.new(config)
 stream_proxy = WEBrick::StreamProxy.new(config)
 [:INT, :TERM].each { |signal| Signal.trap(signal){stream_proxy.shutdown} }
 stream_proxy.start

@@ -12,7 +12,8 @@ body {
 div#background {
   position : absolute;
   z-index : 0;
-  background : url(http://gyazo.com/5494a506be760b37c873dea60472b298.png) 50% 50% no-repeat;
+  /*background : url(http://gyazo.com/5494a506be760b37c873dea60472b298.png) 50% 50% no-repeat;*/
+  background : url(http://a3.twimg.com/profile_background_images/112204483/62ee3b6b4712fdd819736659e7067251.png) 25% 25%;
 
 }
 @-webkit-keyframes moveBackGround {
