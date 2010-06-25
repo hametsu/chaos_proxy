@@ -51,10 +51,9 @@ var lng = {
    *
    * @param {Function} fn Call function
    * @param {Object} thisObj This object
-   * @param {Array} args Arguments
    */
-  bind : function(fn, thisObj, args) {
-    return function(){fn.apply(thisObj, args)};
+  bind : function(fn, thisObj) {
+    return function(){fn.apply(thisObj, arguments)};
   }
 
 }
