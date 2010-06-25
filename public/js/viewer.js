@@ -557,7 +557,7 @@ Chaos.WebSocket.prototype = {
       //console.info('Data receive !!:' + eventName);
       this._fire(eventName, d, d.socketKey, d.pid);
     } catch(e) {
-      //console.error(e);
+      console.error(e);
     }
   },
 
