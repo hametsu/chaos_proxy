@@ -106,6 +106,10 @@ Chaos.bootstrap = function() {
     Chaos.startProxyLog({
       socket : ws
     });
+    Chaos.startTwitterSearch({
+      queue : q,
+      keyword : SETTINGS.TWITTER_SEARCH_KEYWORD
+    });
     Chaos.startCommandReceiver({
       socket : ws,
       queue : q
