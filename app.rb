@@ -23,6 +23,7 @@ configure do
                 'mogra' => 'p10249-ipngn501marunouchi.tokyo.ocn.ne.jp', # 20100529
                 #'mogra' => 'p17107-ipngn2801marunouchi.tokyo.ocn.ne.jp', # 20100529
                 'linuxcafe' => '',
+                'bullets' => 'p25180-adsau16honb12-acca.tokyo.ocn.ne.jp',
                }
 end
 
