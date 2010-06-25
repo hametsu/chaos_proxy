@@ -330,7 +330,7 @@ Chaos.animation.ShowTweet.prototype = {
 
     q.push({
       fn : callback,
-      delay : 2000,
+      delay : 4500,
       callback : lng.emptyFn
     });
   },
