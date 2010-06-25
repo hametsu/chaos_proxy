@@ -71,7 +71,7 @@ Chaos.animation.UserList.prototype = {
     this.viewArea.hide();
     this.viewArea.appendTo(this.elm);
     this.viewTitle = $('<div class="userListTitle">');
-    this.viewTitle.append($('<span>').text('Artists of HAMETSU Lounge'));
+    this.viewTitle.append($('<span>').text('Users in NishiAzabu BULLET\'S'));
     this.viewTitle.hide();
     this.viewTitle.appendTo(this.elm);
     this.viewTitle.show('1000');
