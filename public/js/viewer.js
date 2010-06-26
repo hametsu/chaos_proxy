@@ -52,8 +52,12 @@ var lng = {
    * @param {Function} fn Call function
    * @param {Object} thisObj This object
    */
-  bind : function(fn, thisObj) {
-    return function(){fn.apply(thisObj, arguments)};
+  bind : function(fn, thisObj, args) {
+    if (args == undefined) {
+      return function(){fn.apply(thisObj, arguments)}
+    } else {
+      return function(){fn.apply(thisObj, args)}
+    }
   }
 
 }
@@ -405,9 +409,8 @@ Chaos.TwitterCrawler = (function() {
       interval = config.interval || interval;
       rpp = config.rpp || rpp;
 
-      var fn =  lng.bind(this.getSearchResults, this);
-      fn(word, callback);
-      timer = setInterval(function(){fn(word, callback)}, interval);
+      var fn =  lng.bind(this.getSearchResults, this, [word, callback]);
+      timer = setInterval(fn, interval);
     },
 
     stop : function() {
