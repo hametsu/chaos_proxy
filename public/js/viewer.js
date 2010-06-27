@@ -74,7 +74,8 @@ var SETTINGS = {
   MESSAGE_SPEED : 40,
   MAX_IMAGE_SIZE : 1300,
   BENJO_SERVER_WEBSOCKET_URL : 'ws://chaos.yuiseki.net:4569/',
-  TWITTER_SEARCH_KEYWORD : '#ts6'
+  TWITTER_SEARCH_KEYWORD : '#hametsulo',
+  PLACE_NAME : 'Users in Hametsu Lounge'
 }
 
 var MESSAGES = {
@@ -1287,7 +1288,7 @@ Chaos.animation.UserList.prototype = {
     this.viewArea.hide();
     this.viewArea.appendTo(this.elm);
     this.viewTitle = $('<div class="userListTitle">');
-    this.viewTitle.append($('<span>').text('Users in NishiAzabu BULLET\'S'));
+    this.viewTitle.append($('<span>').text(SETTINGS.PLACE_NAME));
     this.viewTitle.hide();
     this.viewTitle.appendTo(this.elm);
     this.viewTitle.show('1000');
