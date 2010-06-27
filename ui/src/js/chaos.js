@@ -8,7 +8,8 @@ var SETTINGS = {
   MESSAGE_SPEED : 40,
   MAX_IMAGE_SIZE : 1300,
   BENJO_SERVER_WEBSOCKET_URL : 'ws://chaos.yuiseki.net:4569/',
-  TWITTER_SEARCH_KEYWORD : '#ts6'
+  TWITTER_SEARCH_KEYWORD : '#hametsulo',
+  PLACE_NAME : 'Users in Hametsu Lounge'
 }
 
 var MESSAGES = {

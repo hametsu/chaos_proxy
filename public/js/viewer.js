@@ -52,8 +52,12 @@ var lng = {
    * @param {Function} fn Call function
    * @param {Object} thisObj This object
    */
-  bind : function(fn, thisObj) {
-    return function(){fn.apply(thisObj, arguments)};
+  bind : function(fn, thisObj, args) {
+    if (args == undefined) {
+      return function(){fn.apply(thisObj, arguments)}
+    } else {
+      return function(){fn.apply(thisObj, args)}
+    }
   }
 
 }
@@ -70,7 +74,8 @@ var SETTINGS = {
   MESSAGE_SPEED : 40,
   MAX_IMAGE_SIZE : 1300,
   BENJO_SERVER_WEBSOCKET_URL : 'ws://chaos.yuiseki.net:4569/',
-  TWITTER_SEARCH_KEYWORD : '#ts6'
+  TWITTER_SEARCH_KEYWORD : '#hametsulo',
+  PLACE_NAME : 'Users in Hametsu Lounge'
 }
 
 var MESSAGES = {
@@ -405,9 +410,8 @@ Chaos.TwitterCrawler = (function() {
       interval = config.interval || interval;
       rpp = config.rpp || rpp;
 
-      var fn =  lng.bind(this.getSearchResults, this);
-      fn(word, callback);
-      timer = setInterval(function(){fn(word, callback)}, interval);
+      var fn =  lng.bind(this.getSearchResults, this, [word, callback]);
+      timer = setInterval(fn, interval);
     },
 
     stop : function() {
@@ -1284,7 +1288,7 @@ Chaos.animation.UserList.prototype = {
     this.viewArea.hide();
     this.viewArea.appendTo(this.elm);
     this.viewTitle = $('<div class="userListTitle">');
-    this.viewTitle.append($('<span>').text('Users in NishiAzabu BULLET\'S'));
+    this.viewTitle.append($('<span>').text(SETTINGS.PLACE_NAME));
     this.viewTitle.hide();
     this.viewTitle.appendTo(this.elm);
     this.viewTitle.show('1000');
