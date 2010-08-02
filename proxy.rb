@@ -31,7 +31,8 @@ $allowed_hosts = [
   "clients1.google.co.jp", "maps.google.com", "maps.gstatic.com", "www.google-analytics.com",
   "wiki.github.com",
   "clife-stg.cerevo.com", "clife.cerevo.com",
-  "www.ustream.tv", "rgw.ustream.tv"
+  "www.ustream.tv", "rgw.ustream.tv",
+  "live.nicovideo.jp"
 ]
 $allowed_ctypes = ["image/jpeg", "image/gif", "image/png", nil]
 

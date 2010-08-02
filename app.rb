@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'sinatra'
+require 'sinatra/reloader'
 require 'erb'
 require 'yaml'
 require 'net/http'
@@ -24,6 +25,7 @@ configure do
                 #'mogra' => 'p17107-ipngn2801marunouchi.tokyo.ocn.ne.jp', # 20100529
                 'linuxcafe' => '',
                 'bullets' => 'p25180-adsau16honb12-acca.tokyo.ocn.ne.jp',
+                'taiwan' => '114.32.5.75',
                }
 end
 
