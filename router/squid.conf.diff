@@ -1,0 +1,66 @@
+--- /etc/squid/squid.conf	2010/08/08 04:42:07	1.1
++++ /etc/squid/squid.conf	2010/08/08 04:44:11
+@@ -673,7 +673,7 @@
+ # Example rule allowing access from your local networks.
+ # Adapt localnet in the ACL section to list your (internal) IP networks
+ # from where browsing should be allowed
+-#http_access allow localnet
++http_access allow localnet
+ http_access allow localhost
+ 
+ # And finally deny all other access to this proxy
+@@ -734,7 +734,7 @@
+ # htcp_access deny all
+ #
+ #Allow HTCP queries from local networks only
+-# htcp_access allow localnet
++htcp_access allow localnet
+ # htcp_access deny all
+ 
+ #  TAG: htcp_clr_access
+@@ -1111,7 +1111,7 @@
+ #	visible on the internal address.
+ #
+ # Squid normally listens to port 3128
+-http_port 3128
++http_port 3128 transparent
+ 
+ #  TAG: https_port
+ # Note: This option is only available if Squid is rebuilt with the
+@@ -1622,6 +1622,9 @@
+ #
+ #Default:
+ # none
++cache_peer yuiseki.net parent 3000 3130 no-query
++never_direct allow all
++
+ 
+ #  TAG: cache_peer_domain
+ #	Use to limit the domains for which a neighbor cache will be
+@@ -1748,7 +1751,7 @@
+ #	objects.
+ #
+ #Default:
+-# cache_mem 8 MB
++ cache_mem 256 MB
+ 
+ #  TAG: maximum_object_size_in_memory	(bytes)
+ #	Objects greater than this size will not be attempted to kept in
+@@ -1998,7 +2001,7 @@
+ #	proper proxy for APT.
+ #
+ #Default:
+-# maximum_object_size 20480 KB
++maximum_object_size 1024 KB
+ 
+ #  TAG: cache_swap_low	(percent, 0-100)
+ #  TAG: cache_swap_high	(percent, 0-100)
+@@ -4711,7 +4714,7 @@
+ #		X-Forwarded-For: unknown
+ #
+ #Default:
+-# forwarded_for on
++forwarded_for on
+ 
+ #  TAG: cachemgr_passwd
+ #	Specify passwords for cachemgr operations.
