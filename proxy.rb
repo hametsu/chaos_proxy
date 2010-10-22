@@ -320,8 +320,8 @@ config = {
   #:Logger => WEBrick::Log::new("tmp/proxy.log", WEBrick::Log::FATAL),
 }
 
-#stream_proxy = WEBrick::HTTPProxyServer.new(config)
-stream_proxy = WEBrick::StreamProxy.new(config)
+stream_proxy = WEBrick::HTTPProxyServer.new(config)
+#stream_proxy = WEBrick::StreamProxy.new(config)
 [:INT, :TERM].each { |signal| Signal.trap(signal){stream_proxy.shutdown} }
 stream_proxy.start
 
