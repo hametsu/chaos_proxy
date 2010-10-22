@@ -112,10 +112,10 @@ handler = Proc.new() {|req,res|
     #utf_body.gsub!(/。/, 'にょ。')
     doc = Hpricot(utf_body)
     # twitter_nameとuser_iconを特定
-    span_me_name = doc.search('span#me_name')
-    div_user_icon = doc.search('img.side_thumb').first
-    if span_me_name
-      twitter_name = span_me_name.inner_html
+    span_screen_name = doc.search('span#screen-name')
+    div_user_icon = doc.search('span#profile-image/img').first
+    if span_screen_name
+      twitter_name = span_screen_name.inner_html.strip
       user_icon = ''
       user_icon = div_user_icon.attributes['src'] if div_user_icon
       unless twitter_name == ""
