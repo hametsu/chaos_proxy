@@ -1447,6 +1447,12 @@ Chaos.bootstrap = function() {
   initSettings();
   initMessageArea(initScreen);
 
+  if (!window.console) {
+    window.console = {
+info : function() {/* this is dummy method*/}
+    }
+  }
+
   function initSettings() {
     var maxsize = location.href.match(/maxsize=([0-9]+)/);
     if (maxsize) {
